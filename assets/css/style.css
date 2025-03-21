@@ -10,8 +10,7 @@ base styles
 ====================================================*/
 @layer base {
     body {
-        font-family: "Zen Kaku Gothic New", sans-serif;
-        font-size: 1.6rem;
+        font-family: "Noto Sans TC", sans-serif;
         line-height: 1.5;
         color: theme('colors.black');
         font-weight: 400;
@@ -23,11 +22,11 @@ base styles
         -ms-interpolation-mode: bicubic;
     }
     ::-moz-selection {
-        background-color: theme('colors.yellow');
+        background-color: theme('colors.black');
         color: theme('colors.white');
     }
     ::selection {
-        background-color: theme('colors.yellow');
+        background-color: theme('colors.black');
         color: theme('colors.white');
     }
 }
