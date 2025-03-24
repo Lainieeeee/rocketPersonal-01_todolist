@@ -35,7 +35,17 @@ base styles
 components styles　※Button、Card、Modal etc..
 ====================================================*/
 @layer components {
-    
+    .bgStyle:after{
+        content: "";
+        position: absolute;
+        display: inline-block;
+        background: linear-gradient(172.7deg, theme('colors.yellow') 50%, theme('colors.white') 50.1%);
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
 }
 
 /*====================================================
