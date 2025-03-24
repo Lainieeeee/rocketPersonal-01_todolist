@@ -62,22 +62,22 @@
                 <!-- tabs -->
                 <div class="tabs grid grid-cols-3 text-sm font-bold">
                     <button class="tab px-3 py-6 border-b-2 border-black active" data-filter="all">全部</button>
-                    <button class="tab px-3 py-6 border-b-2 border-[#E5E5E5]" data-filter="incomplete">待完成</button>
-                    <button class="tab px-3 py-6 border-b-2 border-[#E5E5E5]" data-filter="complete">已完成</button>
+                    <button class="tab px-3 py-6 border-b-2 border-[#E5E5E5] text-secondary" data-filter="incomplete">待完成</button>
+                    <button class="tab px-3 py-6 border-b-2 border-[#E5E5E5] text-secondary" data-filter="complete">已完成</button>
                 </div>
                 <!-- todoList -->
                 <ul id="todoList" class="pt-3">
                     <li class="flex justify-start items-center mx-6 py-4 border-b border-[#E5E5E5]">
-                        <input class="w-[20px] h-[20px]" type="checkbox" value="" id="">
+                        <input class="w-[20px] h-[20px] cursor-pointer" type="checkbox" value="" id="">
                         <label class="w-[calc(100%-40px)] px-4" for="">把冰箱發霉的檸檬拿去丟</label>
-                        <button class="w-[20px] delete">
+                        <button class="w-[20px] hover:opacity-75 duration-300 delete">
                             <i class="fa-solid fa-xmark text-2xl"></i>
                         </button>
                     </li>
                     <li class="flex justify-start items-center mx-6 py-4 border-b border-[#E5E5E5]">
-                        <input class="w-[20px] h-[20px]" type="checkbox" value="" id="" checked>
+                        <input class="w-[20px] h-[20px] cursor-pointer" type="checkbox" value="" id="" checked>
                         <label class="w-[calc(100%-40px)] px-4 line-through text-secondary" for="">把冰箱發霉的檸檬拿去丟</label>
-                        <button class="w-[20px] delete">
+                        <button class="w-[20px] delete hover:opacity-75 duration-300">
                             <i class="fa-solid fa-xmark text-2xl"></i>
                         </button>
                     </li>
@@ -86,7 +86,7 @@
                 <div class="flex justify-between items-center p-6">
                     <p>5 個待完成項目</p>
                     <p class="ms-6">
-                        <a href="" class="hover:opacity-75 duration-300">清除已完成項目</a>
+                        <a href="" class="hover:opacity-75 duration-300 text-secondary">清除已完成項目</a>
                     </p>
                 </div>
             </div>
