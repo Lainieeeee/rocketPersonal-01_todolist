@@ -20,7 +20,7 @@
 <body class="bg-yellow">
 
     <!-- main -->
-    <main>
+    <main class="md:grid md:place-items-center md:h-screen">
         <section class="max-w-4xl mx-auto px-6 py-14 md:grid md:grid-cols-2 md:gap-12 items-center">
             <!-- leftImg -->
             <div class="leftImg">
@@ -32,25 +32,25 @@
                 </div>
             </div>
             <!-- rightBox -->
-            <div class="rightBox text-center">
-                <h1 class="font-bold text-2xl mb-6 text-start">最實用的線上代辦事項服務</h1>
+            <div class="rightBox">
+                <h1 class="font-bold text-2xl mb-6 text-center md:text-start">最實用的線上代辦事項服務</h1>
                 <!-- 表單 -->
                 <form method="" action="">
                     <!-- Email -->
-                    <div class="mb-6 text-start">
+                    <div class="mb-6">
                         <label for="email" class="text-sm font-bold block mb-1">Email</label>
-                        <input type="email" id="email" class="w-full p-2 text-base rounded">
+                        <input type="email" id="email" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請輸入Email">
                         <span class="text-pink text-sm font-bold">此欄位不可為空</span>
                     </div>
                     <!-- 密碼 -->
-                    <div class="mb-6 text-start">
+                    <div class="mb-6">
                         <label for="password" class="text-sm font-bold block mb-1">密碼</label>
-                        <input type="password" id="password" class="w-full p-2 text-base rounded">
+                        <input type="password" id="password" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請輸入密碼">
                     </div>
                     <!-- 登入 -->
-                    <button type="submit" class="bg-black text-white font-bold py-3 px-12 rounded hover:opacity-75 duration-300">登入</button>
+                    <button type="submit" class="block mx-auto bg-black text-white font-bold py-3 px-12 rounded hover:opacity-75 duration-300">登入</button>
                     <!-- 註冊帳號 -->
-                    <p class="mt-6">
+                    <p class="mt-6 text-center">
                         <a href="" class="font-bold border-yellow hover:border-b hover:border-black duration-300">
                             註冊帳號
                         </a>
