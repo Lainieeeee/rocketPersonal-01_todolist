@@ -92,7 +92,7 @@ if (loginBtn) {
                 // console.log(token); // tokenが正常に取得できているかconsole.logで確認
                 const expires = new Date();
                 expires.setTime(expires.getTime() + (1 * 60 * 60 * 1000)); // 1時間後に期限を設定
-                document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/`; // 取得したtokenをcookieとして定義
+                document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/`; // クッキーの有効期限を指定（サイト全体に適用）
 
                 window.location.href = "toDoList.html";  // toDoListページにリダイレクト
 
