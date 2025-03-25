@@ -13,6 +13,10 @@ const signUpBtn = document.getElementById("signUpBtn");
 if (signUpBtn) {
     signUpBtn.addEventListener("click", async (e) => {
 
+        // 停止表單的預設(自動提交)行為，避免網頁重新整理
+        // <form> 裡，按鈕 (button) 預設是「提交 (submit)」，按下後會讓整個頁面重新整理，導致後面的 JavaScript 無法正常執行
+        e.preventDefault();
+
         // 1. 取得表單輸入內容
         const email = document.getElementById("email").value;
         const nickname = document.getElementById("name").value;
@@ -63,6 +67,10 @@ const loginBtn = document.getElementById("loginBtn");
 // 點擊「登入」按鈕時，執行這裡
 if (loginBtn) {
     loginBtn.addEventListener("click", async (e) => {
+
+        // 停止表單的預設(自動提交)行為，避免網頁重新整理
+        // <form> 裡，按鈕 (button) 預設是「提交 (submit)」，按下後會讓整個頁面重新整理，導致後面的 JavaScript 無法正常執行
+        e.preventDefault();
     
         // 1. 從表單取得輸入的資訊
         const email = document.getElementById("email").value;
