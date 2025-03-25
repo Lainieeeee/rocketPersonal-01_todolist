@@ -27,7 +27,7 @@ if (signUpBtn) {
         }
 
         try {
-            // サーバーに対してユーザー情報をPOSTリクエストで送信
+            // サーバーにユーザー情報をPOST送信
             const response = await fetch(`${apiUrl}/users`, {
                 method: "POST", // POSTメソッドを使う
                 headers: { "Content-Type": "application/json" },  // リクエストボディの形式をJSONに指定
@@ -73,7 +73,7 @@ if (loginBtn) {
         }
     
         try {
-            // サーバーに対してログイン情報をPOSTリクエストで送信
+            // サーバーにユーザー情報をPOST送信
             const response = await fetch(`${apiUrl}/users/sign_in`, {
                 method: "POST",  // POSTメソッドを使う
                 headers: { "Content-Type": "application/json" },  // リクエストボディの形式をJSONに指定
@@ -86,7 +86,15 @@ if (loginBtn) {
             // レスポンスが正常であればログイン成功メッセージを表示
             if (response.ok) {
                 alert("登錄成功！");
-                window.location.href = "toDoList.html";  // リダイレクト
+
+                // 例：トークンをcookieに保存（期限は1時間に設定）
+                const token = result.token;  // APIから返されたトークンを取得
+                const expires = new Date();
+                expires.setTime(expires.getTime() + (1 * 60 * 60 * 1000)); // 1時間後に期限を設定
+                document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/`;
+
+                window.location.href = "toDoList.html";  // toDoListページにリダイレクト
+
             } else {
                 alert(`登錄失敗: ${result.error}`);
             }
@@ -94,5 +102,37 @@ if (loginBtn) {
             console.error(error);
             alert("登錄時發生錯誤");
         }
+    });
+}
+
+// ============================================
+// cookieからトークンを取得してログイン状態を確認
+// ============================================
+// cookieからトークンを取得
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+// ログイン状態を確認
+const token = getCookie("token");
+if (!token) {
+    // トークンがなければ、ログインページにリダイレクト
+    window.location.href = "index.html";
+} else {
+    // トークンがあれば、consoleに表示
+    console.log("已登入");
+}
+
+// ============================================
+// 登出
+// ============================================
+// 「登出」ボタンを定義
+const logoutBtn = document.getElementById("logoutBtn");
+// 「登出」をクリックしたときに以下を実行
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+        
     });
 }
