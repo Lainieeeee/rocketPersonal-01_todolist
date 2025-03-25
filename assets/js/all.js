@@ -4,7 +4,7 @@
 const apiUrl = "https://todoo.5xcamp.us";
 
 // ============================================
-// 註冊帳號
+// 註冊帳號 POST(https://todoo.5xcamp.us/users)
 // ============================================
 // 「註冊帳號」ボタンを定義
 const signUpBtn = document.getElementById("signUpBtn");
@@ -52,7 +52,7 @@ if (signUpBtn) {
 }
 
 // ============================================
-// 登入
+// 登入 POST(https://todoo.5xcamp.us/users/sign_in)
 // ============================================
 // 「登入」ボタンを定義
 const loginBtn = document.getElementById("loginBtn");
@@ -85,13 +85,14 @@ if (loginBtn) {
     
             // レスポンスが正常であればログイン成功メッセージを表示
             if (response.ok) {
-                alert("登錄成功！");
+                console.log("登錄成功！");
 
-                // 例：トークンをcookieに保存（期限は1時間に設定）
-                const token = result.token;  // APIから返されたトークンを取得
+                // tokenを取得
+                const token = response.headers.get("Authorization");  // ヘッダーからtokenを取得
+                // console.log(token); // tokenが正常に取得できているかconsole.logで確認
                 const expires = new Date();
                 expires.setTime(expires.getTime() + (1 * 60 * 60 * 1000)); // 1時間後に期限を設定
-                document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/`;
+                document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/`; // 取得したtokenをcookieとして定義
 
                 window.location.href = "toDoList.html";  // toDoListページにリダイレクト
 
@@ -102,37 +103,5 @@ if (loginBtn) {
             console.error(error);
             alert("登錄時發生錯誤");
         }
-    });
-}
-
-// ============================================
-// cookieからトークンを取得してログイン状態を確認
-// ============================================
-// cookieからトークンを取得
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-}
-// ログイン状態を確認
-const token = getCookie("token");
-if (!token) {
-    // トークンがなければ、ログインページにリダイレクト
-    window.location.href = "index.html";
-} else {
-    // トークンがあれば、consoleに表示
-    console.log("已登入");
-}
-
-// ============================================
-// 登出
-// ============================================
-// 「登出」ボタンを定義
-const logoutBtn = document.getElementById("logoutBtn");
-// 「登出」をクリックしたときに以下を実行
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-        
     });
 }
