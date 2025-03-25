@@ -1,52 +1,56 @@
 // ============================================
-// 共通APIを定義
+// 定義共用的 API URL
+// 讓後面的程式碼就能夠統一使用這個 URL 來發送請求
 // ============================================
 const apiUrl = "https://todoo.5xcamp.us";
 
 // ============================================
 // 註冊帳號 POST(https://todoo.5xcamp.us/users)
 // ============================================
-// 「註冊帳號」ボタンを定義
+// 定義「註冊帳號」按鈕變數
 const signUpBtn = document.getElementById("signUpBtn");
-// 「註冊帳號」をクリックしたときに以下を実行
+// 點擊「註冊帳號」按鈕時，執行這裡
 if (signUpBtn) {
     signUpBtn.addEventListener("click", async (e) => {
 
-        // フォームのデフォルトの送信を防止
-        e.preventDefault();
-
-        // フォームから入力された情報を取得
+        // 1. 取得表單輸入內容
         const email = document.getElementById("email").value;
         const nickname = document.getElementById("name").value;
         const password = document.getElementById("password").value;
         const password02 = document.getElementById("password02").value;
 
-        // パスワードが一致しているか確認
+        // 2. 檢查輸入欄位是否空
+        if (!email || !nickname || !password || !password02) {
+            return alert("所有欄位都必須填寫！");
+        }
+
+        // 3. 檢查兩個密碼是否一致。如果不一樣，顯示錯誤訊息。
         if (password !== password02) {
             return alert("密碼不一致");
         }
 
+        // 4. 如果輸入正確，執行以下操作
         try {
-            // サーバーにユーザー情報をPOST送信
+            // 4-1. 使用 POST 提交資料送到伺服器
             const response = await fetch(`${apiUrl}/users`, {
-                method: "POST", // POSTメソッドを使う
-                headers: { "Content-Type": "application/json" },  // リクエストボディの形式をJSONに指定
-                body: JSON.stringify({ user: { email, nickname, password } })  // ユーザー情報をJSON形式に変換して送信
+                method: "POST", // 使用 POST 方法來提交資料
+                headers: { "Content-Type": "application/json" },  // 設定請求的內容類型為 JSON
+                body: JSON.stringify({ user: { email, nickname, password } })  // 使用者輸入的資料轉換為 JSON 格式，並放在body
             });
 
-            // サーバーからのレスポンスをJSONとして解析
+            // 4-2. 從伺服器回傳的資料改成 JSON 格式
             const result = await response.json();
 
-            // レスポンスが正常であればログイン成功メッセージを表示
+            // 4-3. 根據伺服器回應的狀況處理
             if (response.ok) {
-                alert("登錄成功！");
-                window.location.href = "index.html";  // ログインページにリダイレクト
+                alert("註冊成功！"); // 如果伺服器回應成功，顯示成功訊息
+                window.location.href = "index.html";  // 跳轉到登入頁面
             } else {
-                alert(`登錄失敗: ${result.error}`);
+                alert(`註冊失敗: ${result.error}`);  // 如果伺服器回應失敗，顯示錯誤訊息
             }
         } catch (error) {
-            console.error(error);
-            alert("登錄時發生錯誤");
+            console.error(error);  // 顯示錯誤訊息到控制台
+            alert("註冊時發生錯誤");  // 顯示錯誤提示
         }
     });
 }
@@ -54,54 +58,51 @@ if (signUpBtn) {
 // ============================================
 // 登入 POST(https://todoo.5xcamp.us/users/sign_in)
 // ============================================
-// 「登入」ボタンを定義
+// 定義「登入」按鈕變數
 const loginBtn = document.getElementById("loginBtn");
-// 「登入」をクリックしたときに以下を実行
+// 點擊「登入」按鈕時，執行這裡
 if (loginBtn) {
     loginBtn.addEventListener("click", async (e) => {
-
-        // フォームのデフォルトの送信を防止
-        e.preventDefault();
     
-        // フォームから入力された情報を取得
+        // 1. 從表單取得輸入的資訊
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
     
-        // 入力内容が空でないかチェック
+        // 2. 檢查輸入欄位是否空
         if (!email || !password) {
             return alert("Email 或者密碼未輸入");
         }
     
+        // 3. 如果輸入正確，執行以下操作
         try {
-            // サーバーにユーザー情報をPOST送信
+            // 3-1. 使用 POST 提交資料送到伺服器
             const response = await fetch(`${apiUrl}/users/sign_in`, {
-                method: "POST",  // POSTメソッドを使う
-                headers: { "Content-Type": "application/json" },  // リクエストボディの形式をJSONに指定
-                body: JSON.stringify({ user: { email, password } })  // ログイン情報をJSON形式に変換して送信
+                method: "POST", // 使用 POST 方法來提交資料
+                headers: { "Content-Type": "application/json" },  // 設定請求的內容類型為 JSON
+                body: JSON.stringify({ user: { email, password } })  // 使用者輸入的資料轉換為 JSON 格式，並放在body
             });
     
-            // サーバーからのレスポンスをJSONとして解析
+            // 3-2. 從伺服器回傳的資料改成 JSON 格式
             const result = await response.json();
-    
-            // レスポンスが正常であればログイン成功メッセージを表示
+
+            // 3-3. 根據伺服器回應的狀況處理
             if (response.ok) {
-                console.log("登錄成功！");
+                console.log("登錄成功！"); // 如果伺服器回應成功，顯示成功訊息
 
-                // tokenを取得
-                const token = response.headers.get("Authorization");  // ヘッダーからtokenを取得
-                // console.log(token); // tokenが正常に取得できているかconsole.logで確認
-                const expires = new Date();
-                expires.setTime(expires.getTime() + (1 * 60 * 60 * 1000)); // 1時間後に期限を設定
-                document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/`; // クッキーの有効期限を指定（サイト全体に適用）
+                // 取得token資料
+                const token = response.headers.get("Authorization");  // 從伺服器回應的 headers 中取得 token
+                const expires = new Date(); // 創建一個新的日期物件
+                expires.setTime(expires.getTime() + (1 * 60 * 60 * 1000)); // 設定token的過期時間為1小時
+                document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/`; // token存到cookie時，設置過期時間
 
-                window.location.href = "toDoList.html";  // toDoListページにリダイレクト
+                window.location.href = "toDoList.html";  // 跳轉到toDoList頁面
 
             } else {
-                alert(`登錄失敗: ${result.error}`);
+                alert(`登錄失敗: ${result.error}`);  // 如果伺服器回應失敗，顯示錯誤訊息
             }
         } catch (error) {
-            console.error(error);
-            alert("登錄時發生錯誤");
+            console.error(error);  // 顯示錯誤訊息到控制台
+            alert("登錄時發生錯誤");  // 顯示錯誤提示
         }
     });
 }
