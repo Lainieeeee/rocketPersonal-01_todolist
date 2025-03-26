@@ -114,3 +114,90 @@ if (loginBtn) {
         }
     });
 }
+
+
+
+
+
+
+
+
+
+
+// ============================================
+// 取出 Cookie 函數
+// ============================================
+function getCookie(name) {
+    // 分割所有 cookies
+    const cookies = document.cookie.split("; ");
+    // 查找並返回指定的 cookie 值
+    for (let cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split("=");
+        if (cookieName === name) {
+            return cookieValue;
+        }
+    }
+    // 如果找不到指定的 cookie，則返回 null
+    return null;
+}
+
+// ============================================
+// 刪除 Cookie 函數
+// ============================================
+function deleteCookie(name) {
+    // 設定過期時間為過去，這樣 Cookie 就會被刪除
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+}
+
+// ============================================
+// 登出 DELETE(https://todoo.5xcamp.us/users/sign_out)
+// ============================================
+// 定義「登出」按鈕變數
+const logoutBtn = document.getElementById("logoutBtn");
+// 點擊「登出」按鈕時，執行這裡
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async (e) => {
+
+        // 停止表單的預設(自動提交)行為，避免網頁重新整理
+        // <form> 裡，按鈕 (button) 預設是「提交 (submit)」，按下後會讓整個頁面重新整理，導致後面的 JavaScript 無法正常執行
+        e.preventDefault();
+    
+        // 1. 從cookie取得token
+        const token = getCookie("token");
+
+        // 2. 檢查token是否沒有
+        if (!token) {
+            alert("尚未登入，無法登出");
+            return;
+        }
+        
+        // 3. 發送請求到伺服器，執行以下操作
+        try {
+            // 3-1. 使用 DELETE 請求資料送到伺服器
+            const response = await fetch(`${apiUrl}/users/sign_out`, {
+                method: "DELETE", // 使用 DELETE 方法來提交資料
+                headers: {
+                    "Content-Type": "application/json",  // 設定請求的內容類型為 JSON
+                    "Authorization": `${token}`  // token 設定到 Authorization 標頭（注意這裡不需要 Bearer 字串）
+                }
+            });
+
+            // 3-2. 從伺服器回傳的資料改成 JSON 格式
+            const result = await response.json();
+
+            // 3-3. 根據伺服器回應的狀況處理
+            if (response.ok) {
+                console.log("登出成功！");
+
+                deleteCookie("token");  // 削除token
+
+                window.location.href = "index.html";  // 跳轉到登入頁面
+            } else {
+                alert(`登出失敗: ${result.message}`);
+            }
+        } catch (error) {
+            console.error(error);  // 顯示錯誤訊息到控制台
+            alert("登出時發生錯誤");  // 顯示錯誤提示
+        }
+    });
+}
