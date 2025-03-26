@@ -262,7 +262,7 @@ function renderTodos(todos) {
                 e.target.focus();
             });
 
-            // inputの内容が変更されたときに保存する
+            // inputの内容が変更されたときに保存する（Enterの場合）
             input.addEventListener("keydown", async (e) => {
                 if (e.key === "Enter") {
                     e.preventDefault();  // Enterでフォームが送信されるのを防ぐ
@@ -278,6 +278,15 @@ function renderTodos(todos) {
                     if (newContent !== todo.content) {
                         await updateTodo(todo.id, newContent);
                     }
+                }
+            });
+
+            // inputの内容が変更されたときに保存する(フォーカスの場合)
+            input.addEventListener("blur", (e) => {
+                const newContent = e.target.value.trim();
+                if (!newContent) {
+                    alert("內容不能為空！");  // 空ならアラート表示
+                    e.target.value = todo.content;  // 元の内容に戻す
                 }
             });
 
