@@ -292,7 +292,23 @@ function renderTodos(todos) {
 
             label.appendChild(input);
             li.appendChild(label);
+
+            // 削除ボタンを作成
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("w-[20px]","hover:opacity-75","duration-300","delete");
+            deleteButton.innerHTML = '<i class="fa-solid fa-xmark text-2xl"></i>';
+
+            // 削除ボタンがクリックされたときの処理
+            deleteButton.addEventListener("click", async (e) => {
+                e.stopPropagation();  // イベントが親要素に伝播しないように
+                await deleteTodo(todo.id);  // TODOを削除
+                e.target.closest("li").remove();  // クリックされたリストアイテムを削除
+            });
+
+            // liに削除ボタンを追加
+            li.appendChild(deleteButton);
             todoList.appendChild(li);
+
         });
         emptyMessage.classList.add("hidden");
         listBox.classList.remove("hidden");
@@ -412,5 +428,32 @@ async function updateTodo(id, newContent) {
         }
     } catch (error) {
         handleError(error, "更新時發生錯誤");
+    }
+}
+
+// ============================================
+// 刪除 TODO DELETE(https://todoo.5xcamp.us/todos/{id})
+// ============================================
+async function deleteTodo(id) {
+    const token = getCookie("token");
+
+    try {
+        const response = await fetch(`${apiUrl}/todos/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+        });
+
+        if (response.ok) {
+            console.log("刪除成功！");
+            await fetchTodos();  // 刪除後重新抓取所有待辦事項，這樣會自動更新計數
+        } else {
+            const result = await response.json();
+            alert(`刪除失敗: ${result.message}`);
+        }
+    } catch (error) {
+        handleError(error, "刪除時發生錯誤");
     }
 }
