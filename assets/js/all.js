@@ -4,6 +4,15 @@
 // ============================================
 const apiUrl = "https://todoo.5xcamp.us";
 
+
+// ============================================
+// 共用錯誤處理函式
+// ============================================
+function handleError(error, message) {
+    console.error(error);
+    alert(message);
+}
+
 // ============================================
 // 註冊帳號 POST(https://todoo.5xcamp.us/users)
 // ============================================
@@ -212,17 +221,26 @@ if (window.location.pathname === "/toDoList.html") {
 
 
 // ============================================
-// 渲染待辦事項 顯示在畫面上
+// 初始化隱藏元素並渲染待辦事項
 // ============================================
+// 1. 初始狀態隱藏元素
+const emptyMessage = document.querySelector(".empty");
+const listBox = document.querySelector(".listBox");
+emptyMessage.classList.add("hidden");
+listBox.classList.add("hidden");
+// 2. 渲染待辦事項到畫面上
 function renderTodos(todos) {
+    
+    // const emptyMessage = document.querySelector(".empty");  // 取得「目前尚無待辦事項」的元素
+    // const listBox = document.querySelector(".listBox");  // 取得 listBox 元素
     const todoList = document.getElementById("todoList"); // 取得列表的元素
-    const emptyMessage = document.querySelector(".empty");  // 取得「目前尚無待辦事項」的元素
-
+    
     todoList.innerHTML = ""; // 先清空列表
 
     if (todos.length === 0) {
         // 如果待辦事項沒有，執行以下操作
         emptyMessage.classList.remove("hidden");
+        listBox.classList.add("hidden");
     } else {
         // 如果待辦事項有，執行以下操作
         todos.forEach(todo => {
@@ -232,6 +250,7 @@ function renderTodos(todos) {
             todoList.appendChild(li);
         });
         emptyMessage.classList.add("hidden");
+        listBox.classList.remove("hidden");
     }
 }
 
@@ -250,7 +269,7 @@ async function fetchTodos() {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `${token}` // 伺服器要求不需要 "Bearer "
+                "Authorization": token  // 伺服器要求不需要 "Bearer "
             }
         });
 
@@ -270,9 +289,68 @@ async function fetchTodos() {
             alert(`取得待辦事項失敗: ${result.message}`);
         }
     } catch (error) {
-        console.error(error);
-        alert("無法取得待辦事項");
+        handleError(error, "無法取得待辦事項");
     }
 }
 // 頁面載入時，取得待辦事項
 document.addEventListener("DOMContentLoaded", fetchTodos);
+
+// ============================================
+// 新增 TODO POST(https://todoo.5xcamp.us/todos)
+// ============================================
+// 定義「新增」按鈕變數
+const addBtn = document.getElementById("addBtn");
+// ??
+if (addBtn) {
+    addBtn.addEventListener("click", async (e) => {
+
+        // 停止表單的預設(自動提交)行為，避免網頁重新整理
+        // <form> 裡，按鈕 (button) 預設是「提交 (submit)」，按下後會讓整個頁面重新整理，導致後面的 JavaScript 無法正常執行
+        e.preventDefault();  // 停止表單的預設提交行為
+
+        // 1. 從cookie取得token
+        const token = getCookie("token");
+
+        // 2. 從表單取得輸入的資訊
+        const content = document.getElementById("inputContent").value;
+
+        // 3. 入力チェック
+        if (!content) {
+            alert("請輸入內容");
+            return;
+        }
+
+        // 4. ??
+        try {
+
+            // 4-1. ??
+            const response = await fetch(`${apiUrl}/todos`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": token
+                },
+                body: JSON.stringify({ todo: { content } })
+            });
+
+            // 4-2. 從伺服器回傳的資料改成 JSON 格式
+            const result = await response.json();
+
+            // 4-3. 根據伺服器回應的狀況處理
+            if (response.ok) {
+                console.log("新增成功！");
+                await fetchTodos();
+                const contentInput = document.getElementById("inputContent");
+                if (contentInput) {
+                    contentInput.value = "";
+                } else {
+                    console.error("未找到輸入欄位");
+                }
+            } else {
+                console.error("新增失敗:", result);
+            }
+        } catch (error) {
+            handleError(error, "新增時發生錯誤");
+        }
+    });
+}
