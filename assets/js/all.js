@@ -220,6 +220,8 @@ if (window.location.pathname === "/toDoList.html") {
 
 
 
+
+
 // ============================================
 // 初始化隱藏元素並渲染待辦事項
 // ============================================
@@ -230,31 +232,56 @@ emptyMessage.classList.add("hidden");
 listBox.classList.add("hidden");
 // 2. 渲染待辦事項到畫面上
 function renderTodos(todos) {
-
     const todoList = document.getElementById("todoList"); // 取得列表的元素
-
     todoList.innerHTML = ""; // 先清空列表
 
     if (todos.length === 0) {
-        // 如果待辦事項沒有，執行以下操作
         emptyMessage.classList.remove("hidden");
         listBox.classList.add("hidden");
     } else {
-        // 如果待辦事項有，執行以下操作
         todos.forEach(todo => {
-
             const li = document.createElement("li");
             li.classList.add("flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
+            li.setAttribute("data-id", todo.id);  // `data-id` に ID をセット
 
             // 新增 label 和 input
             const label = document.createElement("label");
             label.classList.add("w-[calc(100%-40px)]", "px-4");
-            label.innerHTML = `<input type="text" class="w-full" value="${todo.content}" />`;
 
-            // li 要加上 label
+            // input 要有變更事件
+            const input = document.createElement("input");
+            input.type = "text";
+            input.classList.add("w-full");
+            input.value = todo.content;
+
+            // クリックしたら編集可能になる
+            input.addEventListener("click", (e) => {
+                e.target.disabled = false;
+                e.target.focus();
+            });
+
+            // inputの内容が変更されたときに保存する
+            input.addEventListener("keydown", async (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();  // Enterでフォームが送信されるのを防ぐ
+                    const newContent = e.target.value.trim();  // 空白を除去
+            
+                    if (!newContent) {
+                        alert("內容不能為空！");  // 空ならアラート表示
+                        e.target.value = todo.content;  // 元の内容に戻す
+                        return;
+                    }
+            
+                    e.target.disabled = true;
+                    if (newContent !== todo.content) {
+                        await updateTodo(todo.id, newContent);
+                    }
+                }
+            });
+
+            label.appendChild(input);
             li.appendChild(label);
             todoList.appendChild(li);
-
         });
         emptyMessage.classList.add("hidden");
         listBox.classList.remove("hidden");
@@ -265,13 +292,9 @@ function renderTodos(todos) {
 // 顯示TODO列表 GET(https://todoo.5xcamp.us/todos)
 // ============================================
 async function fetchTodos() {
-
-    // 1. 從cookie取得token
     const token = getCookie("token");
 
-    // 2. 確保 token 存在，沒有則中止函式
     try {
-        // 2-1. 使用 GET 請求資料送到伺服器
         const response = await fetch(`${apiUrl}/todos`, {
             method: "GET",
             headers: {
@@ -280,16 +303,13 @@ async function fetchTodos() {
             }
         });
 
-        // 2-2. 檢查伺服器回應的狀態碼
         if (response.status === 401) {
             console.warn("未授權，請先登入");
             return;
         }
 
-        // 2-3. 從伺服器回傳的資料改成 JSON 格式
         const result = await response.json();
 
-        // 2-4. 判斷請求是否成功
         if (response.ok) {
             renderTodos(result.todos); // 成功後渲染畫面
         } else {
@@ -299,38 +319,27 @@ async function fetchTodos() {
         handleError(error, "無法取得待辦事項");
     }
 }
-// 頁面載入時，取得待辦事項
+
 document.addEventListener("DOMContentLoaded", fetchTodos);
 
 // ============================================
 // 新增 TODO POST(https://todoo.5xcamp.us/todos)
 // ============================================
-// 定義「新增」按鈕變數
 const addBtn = document.getElementById("addBtn");
-// ??
+
 if (addBtn) {
     addBtn.addEventListener("click", async (e) => {
-
-        // 停止表單的預設(自動提交)行為，避免網頁重新整理
-        // <form> 裡，按鈕 (button) 預設是「提交 (submit)」，按下後會讓整個頁面重新整理，導致後面的 JavaScript 無法正常執行
         e.preventDefault();  // 停止表單的預設提交行為
 
-        // 1. 從cookie取得token
         const token = getCookie("token");
-
-        // 2. 從表單取得輸入的資訊
         const content = document.getElementById("inputContent").value;
 
-        // 3. 入力チェック
         if (!content) {
             alert("請輸入內容");
             return;
         }
 
-        // 4. ??
         try {
-
-            // 4-1. ??
             const response = await fetch(`${apiUrl}/todos`, {
                 method: "POST",
                 headers: {
@@ -340,10 +349,8 @@ if (addBtn) {
                 body: JSON.stringify({ todo: { content } })
             });
 
-            // 4-2. 從伺服器回傳的資料改成 JSON 格式
             const result = await response.json();
 
-            // 4-3. 根據伺服器回應的狀況處理
             if (response.ok) {
                 console.log("新增成功！");
                 await fetchTodos();
@@ -360,4 +367,34 @@ if (addBtn) {
             handleError(error, "新增時發生錯誤");
         }
     });
+}
+
+// ============================================
+// 修改 TODO PUT(https://todoo.5xcamp.us/todos/{id})
+// ============================================
+// 更新 TODO 功能
+async function updateTodo(id, newContent) {
+    const token = getCookie("token");
+
+    try {
+        const response = await fetch(`${apiUrl}/todos/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: JSON.stringify({ todo: { content: newContent } })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            console.log("更新成功！");
+            await fetchTodos(); // 更新後重新抓取所有待辦事項
+        } else {
+            alert(`更新待辦事項失敗: ${result.message}`);
+        }
+    } catch (error) {
+        handleError(error, "更新時發生錯誤");
+    }
 }
