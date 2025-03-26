@@ -201,3 +201,15 @@ if (logoutBtn) {
         }
     });
 }
+
+// ============================================
+// 訪問到 toDoList.html 時，檢查是否有 token
+// ============================================
+if (window.location.pathname === "/toDoList.html") {
+    // 1. 從cookie取得token
+    const token = getCookie("token");
+    // 2. 如果沒有token就跳轉到登入頁面
+    if (!token) {
+        window.location.href = "index.html";
+    }
+}
