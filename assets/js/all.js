@@ -267,13 +267,13 @@ function renderTodos(todos) {
                 if (e.key === "Enter") {
                     e.preventDefault();  // Enterでフォームが送信されるのを防ぐ
                     const newContent = e.target.value.trim();  // 空白を除去
-            
+
                     if (!newContent) {
                         alert("內容不能為空！");  // 空ならアラート表示
                         e.target.value = todo.content;  // 元の内容に戻す
                         return;
                     }
-            
+
                     e.target.disabled = true;
                     if (newContent !== todo.content) {
                         await updateTodo(todo.id, newContent);
@@ -281,12 +281,14 @@ function renderTodos(todos) {
                 }
             });
 
-            // inputの内容が変更されたときに保存する(フォーカスの場合)
-            input.addEventListener("blur", (e) => {
+            // inputの内容が変更されたときに保存する(フォーカスが外れた場合)
+            input.addEventListener("blur", async (e) => {
                 const newContent = e.target.value.trim();
                 if (!newContent) {
                     alert("內容不能為空！");  // 空ならアラート表示
                     e.target.value = todo.content;  // 元の内容に戻す
+                } else if (newContent !== todo.content) {
+                    await updateTodo(todo.id, newContent); // 編集後の内容をサーバーに送信
                 }
             });
 
