@@ -233,6 +233,8 @@ listBox.classList.add("hidden");
 // 2. 渲染待辦事項到畫面上
 function renderTodos(todos) {
     const todoList = document.getElementById("todoList"); // 取得列表的元素
+    const todoCount = document.getElementById("todoCount"); // 取得計數的元素
+
     todoList.innerHTML = ""; // 先清空列表
 
     if (todos.length === 0) {
@@ -285,6 +287,11 @@ function renderTodos(todos) {
         });
         emptyMessage.classList.add("hidden");
         listBox.classList.remove("hidden");
+    }
+
+    // **リストの数を更新**
+    if (todoCount) {
+        todoCount.textContent = todos.length;
     }
 }
 
