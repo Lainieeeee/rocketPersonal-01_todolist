@@ -242,14 +242,19 @@ function renderTodos(todos) {
     } else {
         // 如果待辦事項有，執行以下操作
         todos.forEach(todo => {
+
             const li = document.createElement("li");
             li.classList.add("flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
+
+            // 新增 label 和 input
             const label = document.createElement("label");
             label.classList.add("w-[calc(100%-40px)]", "px-4");
-            label.setAttribute("for", "");
-            label.textContent = todo.content;
+            label.innerHTML = `<input type="text" class="w-full" value="${todo.content}" />`;
+
+            // li 要加上 label
             li.appendChild(label);
             todoList.appendChild(li);
+
         });
         emptyMessage.classList.add("hidden");
         listBox.classList.remove("hidden");
