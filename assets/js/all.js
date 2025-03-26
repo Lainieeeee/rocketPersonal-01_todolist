@@ -71,16 +71,16 @@ if (loginBtn) {
         // 停止表單的預設(自動提交)行為，避免網頁重新整理
         // <form> 裡，按鈕 (button) 預設是「提交 (submit)」，按下後會讓整個頁面重新整理，導致後面的 JavaScript 無法正常執行
         e.preventDefault();
-    
+
         // 1. 從表單取得輸入的資訊
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
-    
+
         // 2. 檢查輸入欄位是否空
         if (!email || !password) {
             return alert("Email 或者密碼未輸入");
         }
-    
+
         // 3. 如果輸入正確，執行以下操作
         try {
             // 3-1. 使用 POST 提交資料送到伺服器
@@ -89,7 +89,7 @@ if (loginBtn) {
                 headers: { "Content-Type": "application/json" },  // 告訴伺服器請求的內容是 JSON
                 body: JSON.stringify({ user: { email, password } })  // 請求的 body 是 JSON 格式的字串
             });
-    
+
             // 3-2. 從伺服器回傳的資料改成 JSON 格式
             const result = await response.json();
 
@@ -152,7 +152,7 @@ if (logoutBtn) {
         // 停止表單的預設(自動提交)行為，避免網頁重新整理
         // <form> 裡，按鈕 (button) 預設是「提交 (submit)」，按下後會讓整個頁面重新整理，導致後面的 JavaScript 無法正常執行
         e.preventDefault();
-    
+
         // 1. 從cookie取得token
         const token = getCookie("token");
 
@@ -161,7 +161,7 @@ if (logoutBtn) {
             alert("尚未登入，無法登出");
             return;
         }
-        
+
         // 3. 發送請求到伺服器，執行以下操作
         try {
             // 3-1. 使用 DELETE 請求資料送到伺服器
@@ -169,7 +169,7 @@ if (logoutBtn) {
                 method: "DELETE", // 使用 DELETE 方法來提交資料
                 headers: {
                     "Content-Type": "application/json",  // 告訴伺服器請求的內容是 JSON
-                    "Authorization": `${token}`  // 傳送用戶的 token 來驗證請求（注意這裡不需要 Bearer 字串，只要驗證單純的 token 值）
+                    "Authorization": `${token}`  // 傳送用戶的 token 來驗證請求（注意這裡不需要 Bearer 字串，伺服器只要驗證單純的 token 值）
                 }
             });
 
@@ -204,3 +204,75 @@ if (window.location.pathname === "/toDoList.html") {
         window.location.href = "index.html";
     }
 }
+
+
+
+
+
+
+
+// ============================================
+// 渲染待辦事項 顯示在畫面上
+// ============================================
+function renderTodos(todos) {
+    const todoList = document.getElementById("todoList"); // 取得列表的元素
+    const emptyMessage = document.querySelector(".empty");  // 取得「目前尚無待辦事項」的元素
+
+    todoList.innerHTML = ""; // 先清空列表
+
+    if (todos.length === 0) {
+        // 如果待辦事項沒有，執行以下操作
+        emptyMessage.classList.remove("hidden");
+    } else {
+        // 如果待辦事項有，執行以下操作
+        todos.forEach(todo => {
+            const li = document.createElement("li");
+            li.classList.add("flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
+            li.textContent = todo.content;
+            todoList.appendChild(li);
+        });
+        emptyMessage.classList.add("hidden");
+    }
+}
+
+// ============================================
+// 顯示TODO列表 GET(https://todoo.5xcamp.us/todos)
+// ============================================
+async function fetchTodos() {
+
+    // 1. 從cookie取得token
+    const token = getCookie("token");
+
+    // 2. 確保 token 存在，沒有則中止函式
+    try {
+        // 2-1. 使用 GET 請求資料送到伺服器
+        const response = await fetch(`${apiUrl}/todos`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `${token}` // 伺服器要求不需要 "Bearer "
+            }
+        });
+
+        // 2-2. 檢查伺服器回應的狀態碼
+        if (response.status === 401) {
+            console.warn("未授權，請先登入");
+            return;
+        }
+
+        // 2-3. 從伺服器回傳的資料改成 JSON 格式
+        const result = await response.json();
+
+        // 2-4. 判斷請求是否成功
+        if (response.ok) {
+            renderTodos(result.todos); // 成功後渲染畫面
+        } else {
+            alert(`取得待辦事項失敗: ${result.message}`);
+        }
+    } catch (error) {
+        console.error(error);
+        alert("無法取得待辦事項");
+    }
+}
+// 頁面載入時，取得待辦事項
+document.addEventListener("DOMContentLoaded", fetchTodos);
