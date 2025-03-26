@@ -38,8 +38,8 @@ if (signUpBtn) {
             // 4-1. 使用 POST 提交資料送到伺服器
             const response = await fetch(`${apiUrl}/users`, {
                 method: "POST", // 使用 POST 方法來提交資料
-                headers: { "Content-Type": "application/json" },  // 設定請求的內容類型為 JSON
-                body: JSON.stringify({ user: { email, nickname, password } })  // 使用者輸入的資料轉換為 JSON 格式，並放在body
+                headers: { "Content-Type": "application/json" },  // 告訴伺服器請求的內容是 JSON
+                body: JSON.stringify({ user: { email, nickname, password } })  // 請求的 body 是 JSON 格式的字串
             });
 
             // 4-2. 從伺服器回傳的資料改成 JSON 格式
@@ -86,8 +86,8 @@ if (loginBtn) {
             // 3-1. 使用 POST 提交資料送到伺服器
             const response = await fetch(`${apiUrl}/users/sign_in`, {
                 method: "POST", // 使用 POST 方法來提交資料
-                headers: { "Content-Type": "application/json" },  // 設定請求的內容類型為 JSON
-                body: JSON.stringify({ user: { email, password } })  // 使用者輸入的資料轉換為 JSON 格式，並放在body
+                headers: { "Content-Type": "application/json" },  // 告訴伺服器請求的內容是 JSON
+                body: JSON.stringify({ user: { email, password } })  // 請求的 body 是 JSON 格式的字串
             });
     
             // 3-2. 從伺服器回傳的資料改成 JSON 格式
@@ -97,7 +97,7 @@ if (loginBtn) {
             if (response.ok) {
                 console.log("登錄成功！"); // 如果伺服器回應成功，顯示成功訊息
 
-                // 取得token資料
+                // 取得token資料(如果登錄成功，API會回傳 token)
                 const token = response.headers.get("Authorization");  // 從伺服器回應的 headers 中取得 token
                 const expires = new Date(); // 創建一個新的日期物件
                 expires.setTime(expires.getTime() + (1 * 60 * 60 * 1000)); // 設定token的過期時間為1小時
@@ -114,15 +114,6 @@ if (loginBtn) {
         }
     });
 }
-
-
-
-
-
-
-
-
-
 
 // ============================================
 // 取出 Cookie 函數
@@ -145,7 +136,7 @@ function getCookie(name) {
 // 刪除 Cookie 函數
 // ============================================
 function deleteCookie(name) {
-    // 設定過期時間為過去，這樣 Cookie 就會被刪除
+    // 設定過期時間為過去，這樣 Cookie 就會被刪除(設定:1970/01/01(Thu) 00:00:00)
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
 
@@ -177,8 +168,8 @@ if (logoutBtn) {
             const response = await fetch(`${apiUrl}/users/sign_out`, {
                 method: "DELETE", // 使用 DELETE 方法來提交資料
                 headers: {
-                    "Content-Type": "application/json",  // 設定請求的內容類型為 JSON
-                    "Authorization": `${token}`  // token 設定到 Authorization 標頭（注意這裡不需要 Bearer 字串）
+                    "Content-Type": "application/json",  // 告訴伺服器請求的內容是 JSON
+                    "Authorization": `${token}`  // 傳送用戶的 token 來驗證請求（注意這裡不需要 Bearer 字串，只要驗證單純的 token 值）
                 }
             });
 
@@ -203,7 +194,7 @@ if (logoutBtn) {
 }
 
 // ============================================
-// 訪問到 toDoList.html 時，檢查是否有 token
+// 訪問 toDoList.html 時，檢查是否有 token
 // ============================================
 if (window.location.pathname === "/toDoList.html") {
     // 1. 從cookie取得token
