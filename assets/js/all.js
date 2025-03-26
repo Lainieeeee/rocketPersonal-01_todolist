@@ -230,11 +230,9 @@ emptyMessage.classList.add("hidden");
 listBox.classList.add("hidden");
 // 2. 渲染待辦事項到畫面上
 function renderTodos(todos) {
-    
-    // const emptyMessage = document.querySelector(".empty");  // 取得「目前尚無待辦事項」的元素
-    // const listBox = document.querySelector(".listBox");  // 取得 listBox 元素
+
     const todoList = document.getElementById("todoList"); // 取得列表的元素
-    
+
     todoList.innerHTML = ""; // 先清空列表
 
     if (todos.length === 0) {
@@ -246,7 +244,11 @@ function renderTodos(todos) {
         todos.forEach(todo => {
             const li = document.createElement("li");
             li.classList.add("flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
-            li.textContent = todo.content;
+            const label = document.createElement("label");
+            label.classList.add("w-[calc(100%-40px)]", "px-4");
+            label.setAttribute("for", "");
+            label.textContent = todo.content;
+            li.appendChild(label);
             todoList.appendChild(li);
         });
         emptyMessage.classList.add("hidden");
