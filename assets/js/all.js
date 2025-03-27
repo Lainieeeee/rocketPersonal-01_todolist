@@ -238,6 +238,12 @@ function renderTodos(todos) {
         // 有ToDo項目時
         todos.forEach(todo => {
             const li = createTodoItem(todo); // 創建ToDo項目
+
+            // 已完成的項目加上 'completed' 類別
+            if (todo.completed_at !== null) {
+                li.classList.add("completed");
+            }
+
             todoList.appendChild(li); // 加入到列表中
         });
         emptyMessage.classList.add("hidden"); // 隱藏空訊息
@@ -260,6 +266,9 @@ function createTodoItem(todo) {
     const li = document.createElement("li");
     li.classList.add("flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
     li.setAttribute("data-id", todo.id);
+
+    // 創建 checkbox 元素
+    createTaskCheckBox(todo, li);
 
     // 創建 label 元素
     const label = document.createElement("label");
@@ -362,6 +371,34 @@ function createDeleteButton(todo, li) {
 
     return deleteButton;
 }
+// 創建checkbox
+function createTaskCheckBox(todo, li) {
+
+    // 1. 製作「checkbox」
+    const taskCheck = document.createElement("input");
+    taskCheck.type = "checkbox";
+    taskCheck.id = "taskcheck";
+    taskCheck.classList.add("w-[20px]", "h-[20px]", "cursor-pointer");
+
+    // 2. 已完成的項目加上 'checked' 類別
+    if (todo.completed_at !== null) {
+        taskCheck.classList.add("checked");
+        taskCheck.checked = true;
+    }
+
+    // 3. 勾選框被點擊時，執行以下操作
+    taskCheck.addEventListener("change", async () => {
+        const newCompletedState = taskCheck.checked;  // 勾選框選中則為完成，未勾選則為未完成
+        await toggleTodoCompletion(todo.id, newCompletedState);  // 完了狀態更新至伺服器
+    });
+
+    // 追加checkbox至li
+    li.appendChild(taskCheck);
+}
+
+
+
+
 
 // ============================================
 // ToDo列表 GET
@@ -495,5 +532,34 @@ async function deleteTodo(id) {
         }
     } catch (error) {
         handleError(error, "刪除時發生錯誤");
+    }
+}
+
+// ============================================
+// 完成/已完成切換ToDo PATCH
+// ============================================
+async function toggleTodoCompletion(id, newCompletedState) {
+    const token = getCookie("token");
+
+    try {
+        const response = await fetch(`${apiUrl}/todos/${id}/toggle`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token,
+            },
+            body: JSON.stringify({ todo: { completed: newCompletedState } })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            console.log("完了状態更新成功！");
+            await fetchTodos();
+        } else {
+            alert(`完了状態の更新失敗: ${result.message}`);
+        }
+    } catch (error) {
+        handleError(error, "完了状態更新時のエラー");
     }
 }
