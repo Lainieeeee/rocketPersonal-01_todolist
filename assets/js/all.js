@@ -378,7 +378,7 @@ function createTaskCheckBox(todo, li) {
     const taskCheck = document.createElement("input");
     taskCheck.type = "checkbox";
     taskCheck.id = "taskcheck";
-    taskCheck.classList.add("w-[20px]", "h-[20px]", "cursor-pointer");
+    taskCheck.classList.add("w-[20px]", "h-[20px]", "cursor-pointer", "appearance-none", "bg-white", "rounded-sm", "relative", "border", "border-secondary");
 
     // 2. 已完成的項目加上 'checked' 類別
     if (todo.completed_at !== null) {
