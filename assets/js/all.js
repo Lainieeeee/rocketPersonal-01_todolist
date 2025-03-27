@@ -1,23 +1,44 @@
 // ============================================
-// 定義共用的 API URL
-// 讓後面的程式碼就能夠統一使用這個 URL 來發送請求
+// 共用 變數
 // ============================================
+// API URL
 const apiUrl = "https://todoo.5xcamp.us";
 
 // ============================================
-// 共用錯誤處理函式
+// 共用 helper function
 // ============================================
+// 錯誤處理
 function handleError(error, message) {
     console.error(error);
     alert(message);
 }
+// 刪除Cookie
+function deleteCookie(name) {
+    // 設定過期時間為過去，這樣 Cookie 就會被刪除(設定:1970/01/01(Thu) 00:00:00)
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+}
+// 取出Cookie
+function getCookie(name) {
+    // 分割所有 cookies
+    const cookies = document.cookie.split("; ");
+    // 查找並返回指定的 cookie 值
+    for (let cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split("=");
+        if (cookieName === name) {
+            return cookieValue;
+        }
+    }
+    // 如果找不到指定的 cookie，則返回 null
+    return null;
+}
+
+
+
 
 // ============================================
-// 註冊帳號 POST(https://todoo.5xcamp.us/users)
+// 註冊功能 POST
 // ============================================
-// 定義「註冊帳號」按鈕變數
 const signUpBtn = document.getElementById("signUpBtn");
-// 點擊「註冊帳號」按鈕時，執行這裡
 if (signUpBtn) {
     signUpBtn.addEventListener("click", async (e) => {
 
@@ -67,11 +88,9 @@ if (signUpBtn) {
 }
 
 // ============================================
-// 登入 POST(https://todoo.5xcamp.us/users/sign_in)
+// 登入功能 POST
 // ============================================
-// 定義「登入」按鈕變數
 const loginBtn = document.getElementById("loginBtn");
-// 點擊「登入」按鈕時，執行這裡
 if (loginBtn) {
     loginBtn.addEventListener("click", async (e) => {
 
@@ -122,36 +141,9 @@ if (loginBtn) {
 }
 
 // ============================================
-// 取出 Cookie 函數
+// 登出功能 DELETE
 // ============================================
-function getCookie(name) {
-    // 分割所有 cookies
-    const cookies = document.cookie.split("; ");
-    // 查找並返回指定的 cookie 值
-    for (let cookie of cookies) {
-        const [cookieName, cookieValue] = cookie.split("=");
-        if (cookieName === name) {
-            return cookieValue;
-        }
-    }
-    // 如果找不到指定的 cookie，則返回 null
-    return null;
-}
-
-// ============================================
-// 刪除 Cookie 函數
-// ============================================
-function deleteCookie(name) {
-    // 設定過期時間為過去，這樣 Cookie 就會被刪除(設定:1970/01/01(Thu) 00:00:00)
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-}
-
-// ============================================
-// 登出 DELETE(https://todoo.5xcamp.us/users/sign_out)
-// ============================================
-// 定義「登出」按鈕變數
 const logoutBtn = document.getElementById("logoutBtn");
-// 點擊「登出」按鈕時，執行這裡
 if (logoutBtn) {
     logoutBtn.addEventListener("click", async (e) => {
 
@@ -199,7 +191,7 @@ if (logoutBtn) {
 }
 
 // ============================================
-// 訪問 toDoList.html 時，檢查是否有 token
+// 沒有token，無法訪問toDoList.html (=跳轉登入頁)
 // ============================================
 if (window.location.pathname === "/toDoList.html") {
     // 1. 從cookie取得token
@@ -218,118 +210,161 @@ if (window.location.pathname === "/toDoList.html") {
 
 
 
+
+
+
 // ============================================
-// 初始化隱藏元素並渲染待辦事項
+// 顯示ToDo列表
 // ============================================
-// 1. 初始狀態隱藏元素
+// 取得空訊息和列表區塊的元素，並設定初始為隱藏
 const emptyMessage = document.querySelector(".empty");
 const listBox = document.querySelector(".listBox");
-emptyMessage.classList.add("hidden");
-listBox.classList.add("hidden");
-// 2. 渲染待辦事項到畫面上
+emptyMessage.classList.add("hidden"); // 隱藏空訊息
+listBox.classList.add("hidden"); // 隱藏列表區塊
+
+// 顯示ToDo列表
 function renderTodos(todos) {
-    const todoList = document.getElementById("todoList"); // 取得列表的元素
-    const todoCount = document.getElementById("todoCount"); // 取得計數的元素
+
+    const todoList = document.getElementById("todoList"); // 取得列表元素
+    const todoCount = document.getElementById("todoCount"); // 取得計數元素
 
     todoList.innerHTML = ""; // 先清空列表
 
+    // 如果沒有ToDo項目
     if (todos.length === 0) {
-        emptyMessage.classList.remove("hidden");
-        listBox.classList.add("hidden");
+        emptyMessage.classList.remove("hidden"); // 顯示空訊息
+        listBox.classList.add("hidden"); // 隱藏列表區塊
     } else {
+        // 有ToDo項目時
         todos.forEach(todo => {
-            const li = document.createElement("li");
-            li.classList.add("flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
-            li.setAttribute("data-id", todo.id);  // `data-id` に ID をセット
-
-            // 新增 label 和 input
-            const label = document.createElement("label");
-            label.classList.add("w-[calc(100%-40px)]", "px-4");
-
-            // input 要有變更事件
-            const input = document.createElement("input");
-            input.type = "text";
-            input.classList.add("w-full");
-            input.value = todo.content;
-
-            // クリックしたら編集可能になる
-            input.addEventListener("click", (e) => {
-                e.target.disabled = false;
-                e.target.focus();
-            });
-
-            // inputの内容が変更されたときに保存する（Enterの場合）
-            input.addEventListener("keydown", async (e) => {
-                if (e.key === "Enter") {
-                    e.preventDefault();  // Enterでフォームが送信されるのを防ぐ
-                    const newContent = e.target.value.trim();  // 空白を除去
-
-                    if (!newContent) {
-                        alert("內容不能為空！");  // 空ならアラート表示
-                        e.target.value = todo.content;  // 元の内容に戻す
-                        return;
-                    }
-
-                    e.target.disabled = true;
-                    if (newContent !== todo.content) {
-                        await updateTodo(todo.id, newContent);
-                    }
-                }
-            });
-
-            // inputの内容が変更されたときに保存する(フォーカスが外れた場合)
-            input.addEventListener("blur", async (e) => {
-                const newContent = e.target.value.trim();
-                if (!newContent) {
-                    alert("內容不能為空！");  // 空ならアラート表示
-                    e.target.value = todo.content;  // 元の内容に戻す
-                } else if (newContent !== todo.content) {
-                    await updateTodo(todo.id, newContent); // 編集後の内容をサーバーに送信
-                }
-            });
-
-            label.appendChild(input);
-            li.appendChild(label);
-
-            // 削除ボタンを作成
-            const deleteButton = document.createElement("button");
-            deleteButton.classList.add("w-[20px]","hover:opacity-75","duration-300","leading-4","delete","hidden");
-            deleteButton.innerHTML = '<i class="fa-solid fa-xmark text-2xl"></i>';
-
-            // 削除ボタンがクリックされたときの処理
-            deleteButton.addEventListener("click", async (e) => {
-                e.stopPropagation();  // イベントが親要素に伝播しないように
-                await deleteTodo(todo.id);  // TODOを削除
-                e.target.closest("li").remove();  // クリックされたリストアイテムを削除
-            });
-
-            // マウスがliに乗ったときに"hidden"クラスを削除
-            li.addEventListener("mouseenter", () => {
-                deleteButton.classList.remove("hidden");
-            });
-
-            // マウスがliから離れたときに"hidden"クラスを追加
-            li.addEventListener("mouseleave", () => {
-                deleteButton.classList.add("hidden");
-            });
-
-            // liに削除ボタンを追加
-            li.appendChild(deleteButton);
-            todoList.appendChild(li);
-
+            const li = createTodoItem(todo); // 創建ToDo項目
+            todoList.appendChild(li); // 加入到列表中
         });
-        emptyMessage.classList.add("hidden");
-        listBox.classList.remove("hidden");
+        emptyMessage.classList.add("hidden"); // 隱藏空訊息
+        listBox.classList.remove("hidden"); // 顯示列表區塊
     }
 
-    // **リストの数を更新**
+    // 更新列表的數量
     if (todoCount) {
         todoCount.textContent = todos.length;
     }
 }
 
 // ============================================
-// 顯示TODO列表 GET(https://todoo.5xcamp.us/todos)
+// 共用 helper function
+// ============================================
+// 製作待辦事項項目
+function createTodoItem(todo) {
+
+    // 創建 ToDo 項目元素，並設置樣式
+    const li = document.createElement("li");
+    li.classList.add("flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
+    li.setAttribute("data-id", todo.id);
+
+    // 創建 label 元素
+    const label = document.createElement("label");
+    label.classList.add("w-[calc(100%-40px)]", "px-4");
+
+    // 創建輸入框並將其加到 label 裡
+    const input = createInputField(todo);
+    label.appendChild(input);
+    li.appendChild(label);
+
+    // 創建刪除按鈕並將其加到 li 裡
+    const deleteButton = createDeleteButton(todo, li);
+    li.appendChild(deleteButton);
+
+    // 切換「刪除」按鈕 顯示/隱藏
+    li.addEventListener("mouseenter", () => deleteButton.classList.remove("hidden")); // 滑鼠移入顯示
+    li.addEventListener("mouseleave", () => deleteButton.classList.add("hidden")); // 滑鼠移出隱藏
+
+    return li;
+}
+// 創建輸入區塊
+function createInputField(todo) {
+
+    // 1. 製作「輸入區塊」
+    const input = document.createElement("input");
+    input.type = "text";
+    input.classList.add("w-full");
+    input.value = todo.content;
+
+    // 2. 點擊「輸入區塊」後，執行以下操作
+    input.addEventListener("click", (e) => {
+        e.target.disabled = false; // 讓輸入框可以編輯
+        e.target.focus(); // 焦點設置到輸入框
+    });
+
+    // 3-1. 按下Enter鍵時的處理
+    input.addEventListener("keydown", async (e) => handleInputChange(e, todo));
+
+    // 3-2. 當失去焦點(focus)時的處理
+    input.addEventListener("blur", async (e) => handleInputBlur(e, todo));
+
+    return input;
+}
+// 修改輸入內容的處理: 按下Enter鍵時
+async function handleInputChange(e, todo) {
+    if (e.key === "Enter") {
+
+        // 停止表單的預設行為（避免頁面重新加載）
+        e.preventDefault();
+
+        // 去除前後的多餘空白字符
+        const newContent = e.target.value.trim();
+
+        // 根據內容是否為空來進行處理
+        if (!newContent) {
+            alert("內容不能為空！");
+            e.target.value = todo.content; // 恢復原來的內容
+        } else if (newContent !== todo.content) {
+            // 禁用輸入框以防止重複提交
+            e.target.disabled = true;
+            await updateTodo(todo.id, newContent); // 更新輸入內容
+        }
+
+    }
+}
+// 修改輸入內容的處理: 失去焦點(focus)時
+async function handleInputBlur(e, todo) {
+
+    // 去除前後的多餘空白字符
+    const newContent = e.target.value.trim();
+
+    // 根據內容是否為空來進行處理
+    if (!newContent) {
+        alert("內容不能為空！");
+        e.target.value = todo.content; // 恢復原來的內容
+    } else if (newContent !== todo.content) {
+        await updateTodo(todo.id, newContent); // 更新輸入內容
+    }
+}
+// 創建刪除ToDo按鈕
+function createDeleteButton(todo, li) {
+
+    // 1. 製作「刪除」按鈕
+    const deleteButton = document.createElement("button");
+    deleteButton.classList.add("w-[20px]", "hover:opacity-75", "duration-300", "leading-4", "delete", "hidden");
+    deleteButton.innerHTML = '<i class="fa-solid fa-xmark text-2xl"></i>';
+
+    // 2. 點擊「刪除」按鈕時，執行以下操作
+    deleteButton.addEventListener("click", async (e) => {
+
+        // 防止事件傳播到父元素
+        e.stopPropagation();
+
+        // 呼叫刪除API，從伺服器刪除該ToDo
+        await deleteTodo(todo.id);
+
+        // 從DOM中移除該ToDo項目
+        li.remove();
+    });
+
+    return deleteButton;
+}
+
+// ============================================
+// ToDo列表 GET
 // ============================================
 async function fetchTodos() {
     const token = getCookie("token");
@@ -359,14 +394,12 @@ async function fetchTodos() {
         handleError(error, "無法取得待辦事項");
     }
 }
-
 document.addEventListener("DOMContentLoaded", fetchTodos);
 
 // ============================================
-// 新增 TODO POST(https://todoo.5xcamp.us/todos)
+// 新增ToDo POST
 // ============================================
 const addBtn = document.getElementById("addBtn");
-
 if (addBtn) {
     addBtn.addEventListener("click", async (e) => {
         e.preventDefault();  // 停止表單的預設提交行為
@@ -410,9 +443,8 @@ if (addBtn) {
 }
 
 // ============================================
-// 修改 TODO PUT(https://todoo.5xcamp.us/todos/{id})
+// 修改ToDo PUT
 // ============================================
-// 更新 TODO 功能
 async function updateTodo(id, newContent) {
     const token = getCookie("token");
 
@@ -440,7 +472,7 @@ async function updateTodo(id, newContent) {
 }
 
 // ============================================
-// 刪除 TODO DELETE(https://todoo.5xcamp.us/todos/{id})
+// 刪除ToDo DELETE
 // ============================================
 async function deleteTodo(id) {
     const token = getCookie("token");
