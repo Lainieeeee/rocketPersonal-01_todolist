@@ -238,10 +238,12 @@ function renderTodos(todos) {
         // 有ToDo項目時
         todos.forEach(todo => {
             const li = createTodoItem(todo); // 創建ToDo項目
+            const inputField = li.querySelector('input[type="text"]');
 
             // 已完成的項目加上 'completed' 類別
             if (todo.completed_at !== null) {
                 li.classList.add("completed");
+                inputField.classList.add("line-through", "text-secondary");
             }
 
             todoList.appendChild(li); // 加入到列表中
@@ -557,9 +559,9 @@ async function toggleTodoCompletion(id, newCompletedState) {
             console.log("完了状態更新成功！");
             await fetchTodos();
         } else {
-            alert(`完了状態の更新失敗: ${result.message}`);
+            alert(`完成狀態更新失敗: ${result.message}`);
         }
     } catch (error) {
-        handleError(error, "完了状態更新時のエラー");
+        handleError(error, "完成狀態更新時發生錯誤");
     }
 }
