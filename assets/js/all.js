@@ -4,7 +4,6 @@
 // ============================================
 const apiUrl = "https://todoo.5xcamp.us";
 
-
 // ============================================
 // 共用錯誤處理函式
 // ============================================
@@ -62,8 +61,7 @@ if (signUpBtn) {
                 alert(`註冊失敗: ${result.error}`);  // 如果伺服器回應失敗，顯示錯誤訊息
             }
         } catch (error) {
-            console.error(error);  // 顯示錯誤訊息到控制台
-            alert("註冊時發生錯誤");  // 顯示錯誤提示
+            handleError(error, "註冊時發生錯誤");
         }
     });
 }
@@ -118,8 +116,7 @@ if (loginBtn) {
                 alert(`登錄失敗: ${result.error}`);  // 如果伺服器回應失敗，顯示錯誤訊息
             }
         } catch (error) {
-            console.error(error);  // 顯示錯誤訊息到控制台
-            alert("登錄時發生錯誤");  // 顯示錯誤提示
+            handleError(error, "登錄時發生錯誤");
         }
     });
 }
@@ -196,8 +193,7 @@ if (logoutBtn) {
                 alert(`登出失敗: ${result.message}`);
             }
         } catch (error) {
-            console.error(error);  // 顯示錯誤訊息到控制台
-            alert("登出時發生錯誤");  // 顯示錯誤提示
+            handleError(error, "登出時發生錯誤");
         }
     });
 }
