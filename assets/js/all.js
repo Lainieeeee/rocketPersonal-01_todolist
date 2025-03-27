@@ -297,7 +297,7 @@ function renderTodos(todos) {
 
             // 削除ボタンを作成
             const deleteButton = document.createElement("button");
-            deleteButton.classList.add("w-[20px]","hover:opacity-75","duration-300","delete");
+            deleteButton.classList.add("w-[20px]","hover:opacity-75","duration-300","leading-4","delete","hidden");
             deleteButton.innerHTML = '<i class="fa-solid fa-xmark text-2xl"></i>';
 
             // 削除ボタンがクリックされたときの処理
@@ -305,6 +305,16 @@ function renderTodos(todos) {
                 e.stopPropagation();  // イベントが親要素に伝播しないように
                 await deleteTodo(todo.id);  // TODOを削除
                 e.target.closest("li").remove();  // クリックされたリストアイテムを削除
+            });
+
+            // マウスがliに乗ったときに"hidden"クラスを削除
+            li.addEventListener("mouseenter", () => {
+                deleteButton.classList.remove("hidden");
+            });
+
+            // マウスがliから離れたときに"hidden"クラスを追加
+            li.addEventListener("mouseleave", () => {
+                deleteButton.classList.add("hidden");
             });
 
             // liに削除ボタンを追加
