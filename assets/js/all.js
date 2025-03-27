@@ -252,9 +252,10 @@ function renderTodos(todos) {
         listBox.classList.remove("hidden"); // 顯示列表區塊
     }
 
-    // 更新列表的數量
+    const incompleteTodos = todos.filter(todo => todo.completed_at === null);
+    // 更新未完成列表的數量
     if (todoCount) {
-        todoCount.textContent = todos.length;
+        todoCount.textContent = incompleteTodos.length;
     }
 }
 
