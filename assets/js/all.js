@@ -260,6 +260,11 @@ function renderTodos(todos) {
         const incompleteTodos = todos.filter(todo => todo.completed_at === null);
         todoCount.textContent = incompleteTodos.length;
     }
+
+    // 5. 取得當前選中的篩選條件
+    const activeFilter = document.querySelector(".tabItems.active")?.getAttribute("data-filter") || "all";
+    filterTodos(activeFilter);
+
 }
 
 // ============================================
@@ -270,7 +275,7 @@ function createTodoItem(todo) {
 
     // 1. 設置 ToDo 項目的列表項目 (li)
     const li = document.createElement("li");
-    li.classList.add("flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
+    li.classList.add("panel", "flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
     li.setAttribute("data-id", todo.id);
 
     // 2. 附加勾選框 (checkbox)
@@ -587,4 +592,55 @@ async function toggleTodoCompletion(id, newCompletedState) {
     } catch (error) {
         handleError(error, "完成狀態更新時發生錯誤");
     }
+}
+
+
+
+
+
+
+
+
+// ============================================
+// 篩選 ToDo 項目
+// ============================================
+const tabs = document.querySelectorAll(".tabItems");
+// 取得所有篩選按鈕（全部、待完成、已完成）
+tabs.forEach(tab => {
+    tab.addEventListener("click", async function () {
+
+        // 1. 取得篩選按鈕類別
+        const filter = tab.getAttribute("data-filter");
+
+        // 2. 先重新獲取最新的 ToDo 列表
+        await fetchTodos();
+        // 根據點擊的按鈕篩選 ToDo 項目
+        filterTodos(filter);
+
+        // 3. 更新按鈕樣式
+        tabs.forEach(t => t.classList.remove("border-black","active"));
+        tabs.forEach(t => t.classList.add("border-[#E5E5E5]"));
+        tab.classList.add("border-black","active");
+        tab.classList.remove("border-[#E5E5E5]");
+
+    });
+});
+// 根據篩選條件顯示 ToDo 項目
+function filterTodos(filter) {
+
+    // 1. 取得所有 ToDo 項目（li）
+    const todoListItems = document.querySelectorAll("#todoList li");
+
+    // 2. 根據篩選條件顯示或隱藏 ToDo 項目
+    todoListItems.forEach(item => {
+        // 判斷該項目是否已完成
+        const isCompleted = item.classList.contains("completed");
+
+        // 根據篩選條件顯示或隱藏
+        if (filter === "all" || (filter === "incomplete" && !isCompleted) || (filter === "completed" && isCompleted)) {
+            item.style.display = "flex";
+        } else {
+            item.style.display = "none";
+        }
+    });
 }
