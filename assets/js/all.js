@@ -62,7 +62,22 @@ if (signUpBtn) {
             return alert("密碼不一致");
         }
 
-        // 4. 如果輸入正確，執行以下操作
+        // 5. 檢查密碼長度和格式
+        const passwordPattern = /^[a-zA-Z0-9]+$/;  // 英数字のみを許可
+        if (password.length < 6) {
+            return alert("密碼必須至少6個字元");
+        }
+        if (!passwordPattern.test(password)) {
+            return alert("密碼只能包含英文字母和數字");
+        }
+
+        // 6. 電子郵件格式是否正確
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(email)) {
+            return alert("請輸入有效的電子郵件地址！");
+        }
+
+        // 7. 如果輸入正確，執行以下操作
         try {
             // 4-1. 使用 POST 提交資料送到伺服器
             const response = await fetch(`${apiUrl}/users`, {
