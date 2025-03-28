@@ -46,6 +46,33 @@ components styles　※Button、Card、Modal etc..
         left: 0;
         z-index: -1;
     }
+    input[type="checkbox"]:checked{
+        border-color: theme('colors.white');
+    }
+    input[type="checkbox"]:checked:before {
+        content: '';
+        position: absolute;
+        display: inline-block;
+        width: 13px;
+        height: 4px;
+        background-color: theme('colors.yellow');;
+        top: 10px;
+        left: -4px;
+        transform: rotate(48deg);
+        border-radius: 4px;
+    }
+    input[type="checkbox"]:checked:after {
+        content: '';
+        position: absolute;
+        display: inline-block;
+        width: 22px;
+        height: 4px;
+        background-color: theme('colors.yellow');;
+        top: 6px;
+        left: 2px;
+        transform: rotate(-48deg);
+        border-radius: 4px;
+    }
 }
 
 /*====================================================

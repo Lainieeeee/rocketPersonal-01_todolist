@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1">
     <!-- css -->
     <link rel="stylesheet" href="assets/css/dist.css">
-    <!-- js -->
-    <script src="assets/js/all.js"></script>
     <!-- google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +19,7 @@
 
     <!-- main -->
     <main class="md:grid md:place-items-center md:h-screen">
-        <section class="max-w-4xl mx-auto px-6 py-14 md:grid md:grid-cols-2 md:gap-12 items-center">
+        <section class="max-w-4xl mx-auto px-6 py-14 md:grid md:grid-cols-2 md:gap-14 items-center">
             <!-- leftImg -->
             <div class="leftImg">
                 <div class="mb-6">
@@ -35,7 +33,7 @@
             <div class="rightBox">
                 <h1 class="font-bold text-2xl mb-6 text-center md:text-start">註冊帳號</h1>
                 <!-- 表單 -->
-                <form method="" action="">
+                <form action="" id="signUpForm">
                     <!-- Email -->
                     <div class="mb-6">
                         <label for="email" class="text-sm font-bold block mb-1">Email</label>
@@ -44,23 +42,23 @@
                     <!-- 您的暱稱 -->
                     <div class="mb-6">
                         <label for="text" class="text-sm font-bold block mb-1">您的暱稱</label>
-                        <input type="text" id="email" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請輸入您的暱稱">
+                        <input type="text" id="name" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請輸入您的暱稱">
                     </div>
                     <!-- 密碼 -->
                     <div class="mb-6">
                         <label for="password" class="text-sm font-bold block mb-1">密碼</label>
-                        <input type="password" id="password" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請輸入密碼">
+                        <input type="password" id="password" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請輸入密碼" maxlength="6">
                     </div>
                     <!-- 再次輸入密碼 -->
                     <div class="mb-6">
                         <label for="password02" class="text-sm font-bold block mb-1">再次輸入密碼</label>
-                        <input type="password" id="password02" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請再次輸入密碼">
+                        <input type="password" id="password02" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請再次輸入密碼" maxlength="6">
                     </div>
                     <!-- 註冊帳號 -->
-                    <button type="submit" class="block mx-auto bg-black text-white font-bold py-3 px-12 rounded hover:opacity-75 duration-300">註冊帳號</button>
+                    <button type="submit" id="signUpBtn" class="block mx-auto bg-black text-white font-bold py-3 px-12 rounded hover:opacity-75 duration-300">註冊帳號</button>
                     <!-- 登入 -->
                     <p class="mt-6 text-center">
-                        <a href="" class="font-bold border-yellow hover:border-b hover:border-black duration-300">
+                        <a href="index.html" class="font-bold border-yellow hover:border-b hover:border-black duration-300">
                             登入
                         </a>
                     </p>
@@ -68,6 +66,9 @@
             </div>
         </section>
     </main>
+
+    <!-- js -->
+    <script src="assets/js/all.js"></script>
 
 </body>
 </html>

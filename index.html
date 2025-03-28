@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1">
     <!-- css -->
     <link rel="stylesheet" href="assets/css/dist.css">
-    <!-- js -->
-    <script src="assets/js/all.js"></script>
     <!-- google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +19,7 @@
 
     <!-- main -->
     <main class="md:grid md:place-items-center md:h-screen">
-        <section class="max-w-4xl mx-auto px-6 py-14 md:grid md:grid-cols-2 md:gap-12 items-center">
+        <section class="max-w-4xl mx-auto px-6 py-14 md:grid md:grid-cols-2 md:gap-14 items-center">
             <!-- leftImg -->
             <div class="leftImg">
                 <div class="mb-6">
@@ -35,7 +33,7 @@
             <div class="rightBox">
                 <h1 class="font-bold text-2xl mb-6 text-center md:text-start">最實用的線上代辦事項服務</h1>
                 <!-- 表單 -->
-                <form method="" action="">
+                <form action="" id="loginForm">
                     <!-- Email -->
                     <div class="mb-6">
                         <label for="email" class="text-sm font-bold block mb-1">Email</label>
@@ -45,13 +43,13 @@
                     <!-- 密碼 -->
                     <div class="mb-6">
                         <label for="password" class="text-sm font-bold block mb-1">密碼</label>
-                        <input type="password" id="password" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請輸入密碼">
+                        <input type="password" id="password" class="w-full p-2 text-base rounded outline-none placeholder:text-secondary" placeholder="請輸入密碼" maxlength="6">
                     </div>
                     <!-- 登入 -->
-                    <button type="submit" class="block mx-auto bg-black text-white font-bold py-3 px-12 rounded hover:opacity-75 duration-300">登入</button>
+                    <button type="submit" id="loginBtn" class="block mx-auto bg-black text-white font-bold py-3 px-12 rounded hover:opacity-75 duration-300">登入</button>
                     <!-- 註冊帳號 -->
                     <p class="mt-6 text-center">
-                        <a href="" class="font-bold border-yellow hover:border-b hover:border-black duration-300">
+                        <a href="register.html" class="font-bold border-yellow hover:border-b hover:border-black duration-300">
                             註冊帳號
                         </a>
                     </p>
@@ -60,5 +58,8 @@
         </section>
     </main>
 
+    <!-- js -->
+    <script src="assets/js/all.js"></script>
+    
 </body>
 </html>

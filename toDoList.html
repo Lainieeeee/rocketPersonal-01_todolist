@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1">
     <!-- css -->
     <link rel="stylesheet" href="assets/css/dist.css">
-    <!-- js -->
-    <script src="assets/js/all.js"></script>
     <!-- google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,9 +30,9 @@
                     王小明的代辦
                 </li>
                 <li class="ms-6">
-                    <a href="" class="hover:opacity-75 duration-300">
+                    <button id="logoutBtn" class="hover:opacity-75 duration-300 text-nowrap">
                         登出
-                    </a>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -45,53 +43,43 @@
         <div class="max-w-xl mx-auto px-6 py-6 md:py-14">
             <!-- inputArea -->
             <div class="inputArea relative z-0">
-                <input type="text" class="w-full px-2 py-3 pe-12 text-base rounded outline-none shadow-md placeholder:text-secondary" placeholder="新增待辦事項">
-                <button type="button" class="absolute z-10 top-2 end-2 hover:opacity-75 duration-300">
+                <input type="text" id="inputContent" class="w-full px-2 py-3 pe-12 text-base rounded outline-none shadow-md placeholder:text-secondary" placeholder="新增待辦事項">
+                <button type="button" id="addBtn" class="absolute z-10 top-2 end-2 hover:opacity-75 duration-300">
                     <i class="fa-solid fa-plus bg-black text-white p-2 rounded"></i>
                 </button>
             </div>
-            <!-- 目前尚無待辦事項 -->
-            <!-- <div class="text-center mt-10">
+            <!-- empty -->
+            <div class="empty text-center mt-10">
                 <p class="mb-6">目前尚無待辦事項</p>
                 <div>
                     <img src="assets/images/common/img-02.webp" alt="圖片" loading="lazy" class="mx-auto">
                 </div>
-            </div> -->
+            </div>
             <!-- listBox -->
             <div class="listBox bg-white rounded shadow-md mt-10">
                 <!-- tabs -->
                 <div class="tabs grid grid-cols-3 text-sm font-bold">
-                    <button class="tab px-3 py-6 border-b-2 border-black active" data-filter="all">全部</button>
-                    <button class="tab px-3 py-6 border-b-2 border-[#E5E5E5]" data-filter="incomplete">待完成</button>
-                    <button class="tab px-3 py-6 border-b-2 border-[#E5E5E5]" data-filter="complete">已完成</button>
+                    <button type="button" class="tabItems px-3 py-6 border-b-2 border-black active" data-filter="all">全部</button>
+                    <button type="button" class="tabItems px-3 py-6 border-b-2 border-silver" data-filter="incomplete">待完成</button>
+                    <button type="button" class="tabItems px-3 py-6 border-b-2 border-silver" data-filter="completed">已完成</button>
                 </div>
                 <!-- todoList -->
-                <ul id="todoList" class="pt-3">
-                    <li class="flex justify-start items-center mx-6 py-4 border-b border-[#E5E5E5]">
-                        <input class="w-[20px] h-[20px]" type="checkbox" value="" id="">
-                        <label class="w-[calc(100%-40px)] px-4" for="">把冰箱發霉的檸檬拿去丟</label>
-                        <button class="w-[20px] delete">
-                            <i class="fa-solid fa-xmark text-2xl"></i>
-                        </button>
-                    </li>
-                    <li class="flex justify-start items-center mx-6 py-4 border-b border-[#E5E5E5]">
-                        <input class="w-[20px] h-[20px]" type="checkbox" value="" id="" checked>
-                        <label class="w-[calc(100%-40px)] px-4 line-through text-secondary" for="">把冰箱發霉的檸檬拿去丟</label>
-                        <button class="w-[20px] delete">
-                            <i class="fa-solid fa-xmark text-2xl"></i>
-                        </button>
-                    </li>
-                </ul>
+                <ul id="todoList" class="pt-3"></ul>
                 <!--  -->
                 <div class="flex justify-between items-center p-6">
-                    <p>5 個待完成項目</p>
+                    <p>
+                        <span id="todoCount"></span> 個待完成項目
+                    </p>
                     <p class="ms-6">
-                        <a href="" class="hover:opacity-75 duration-300">清除已完成項目</a>
+                        <button type="button" id="deleteCompletedBtn" class="hover:opacity-75 duration-300 text-secondary deleteCompleteList">清除已完成項目</button>
                     </p>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- js -->
+    <script src="assets/js/all.js"></script>
 
 </body>
 </html>
