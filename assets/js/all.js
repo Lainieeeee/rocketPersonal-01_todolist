@@ -275,7 +275,7 @@ function createTodoItem(todo) {
 
     // 1. 設置 ToDo 項目的列表項目 (li)
     const li = document.createElement("li");
-    li.classList.add("panel", "flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
+    li.classList.add("panel", "flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-silver");
     li.setAttribute("data-id", todo.id);
 
     // 2. 附加勾選框 (checkbox)
@@ -619,9 +619,9 @@ tabs.forEach(tab => {
 
         // 3. 更新按鈕樣式
         tabs.forEach(t => t.classList.remove("border-black","active"));
-        tabs.forEach(t => t.classList.add("border-[#E5E5E5]"));
+        tabs.forEach(t => t.classList.add("border-silver"));
         tab.classList.add("border-black","active");
-        tab.classList.remove("border-[#E5E5E5]");
+        tab.classList.remove("border-silver");
 
     });
 });
