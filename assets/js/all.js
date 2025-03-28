@@ -214,28 +214,32 @@ if (window.location.pathname === "/toDoList.html") {
 
 
 // ============================================
-// 顯示ToDo列表
+// 顯示 ToDo 列表
 // ============================================
-// 取得空訊息和列表區塊的元素，並設定初始為隱藏
+// 取得元素並隱藏空訊息與列表區塊
 const emptyMessage = document.querySelector(".empty");
 const listBox = document.querySelector(".listBox");
 emptyMessage.classList.add("hidden"); // 隱藏空訊息
 listBox.classList.add("hidden"); // 隱藏列表區塊
-
-// 顯示ToDo列表
+// 顯示 ToDo 列表
 function renderTodos(todos) {
 
-    const todoList = document.getElementById("todoList"); // 取得列表元素
-    const todoCount = document.getElementById("todoCount"); // 取得計數元素
+    // 1. 取得列表元素和計數元素
+    const todoList = document.getElementById("todoList");
+    const todoCount = document.getElementById("todoCount");
 
-    todoList.innerHTML = ""; // 先清空列表
+    // 2. 先清空列表
+    todoList.innerHTML = "";
 
-    // 如果沒有ToDo項目
+    // 3. 根據oDo項目是否存在，執行以下操作
     if (todos.length === 0) {
         emptyMessage.classList.remove("hidden"); // 顯示空訊息
         listBox.classList.add("hidden"); // 隱藏列表區塊
     } else {
-        // 有ToDo項目時
+        emptyMessage.classList.add("hidden"); // 隱藏空訊息
+        listBox.classList.remove("hidden"); // 顯示列表區塊
+
+        // 迭代並創建每個ToDo項目
         todos.forEach(todo => {
             const li = createTodoItem(todo); // 創建ToDo項目
             const inputField = li.querySelector('input[type="text"]');
@@ -246,135 +250,101 @@ function renderTodos(todos) {
                 inputField.classList.add("line-through", "text-secondary");
             }
 
-            todoList.appendChild(li); // 加入到列表中
+            // 加入到列表中
+            todoList.appendChild(li);
         });
-        emptyMessage.classList.add("hidden"); // 隱藏空訊息
-        listBox.classList.remove("hidden"); // 顯示列表區塊
     }
 
-    const incompleteTodos = todos.filter(todo => todo.completed_at === null);
-    // 更新未完成列表的數量
+    // 4. 更新未完成列表的數量
     if (todoCount) {
+        const incompleteTodos = todos.filter(todo => todo.completed_at === null);
         todoCount.textContent = incompleteTodos.length;
     }
 }
 
 // ============================================
-// 共用 helper function
+// 每個 ToDo 項目(li)
 // ============================================
-// 製作待辦事項項目
+// 創建每個 ToDo 項目(li)
 function createTodoItem(todo) {
 
-    // 創建 ToDo 項目元素，並設置樣式
+    // 1. 設置 ToDo 項目的列表項目 (li)
     const li = document.createElement("li");
     li.classList.add("flex", "justify-start", "items-center", "mx-6", "py-4", "border-b", "border-[#E5E5E5]");
     li.setAttribute("data-id", todo.id);
 
-    // 創建 checkbox 元素
+    // 2. 附加勾選框 (checkbox)
     createTaskCheckBox(todo, li);
 
-    // 創建 label 元素
+    // 3. 附加輸入框 (input)
     const label = document.createElement("label");
     label.classList.add("w-[calc(100%-40px)]", "px-4");
-
-    // 創建輸入框並將其加到 label 裡
     const input = createInputField(todo);
     label.appendChild(input);
     li.appendChild(label);
 
-    // 創建刪除按鈕並將其加到 li 裡
+    // 4. 附加刪除按鈕
     const deleteButton = createDeleteButton(todo, li);
     li.appendChild(deleteButton);
 
-    // 切換「刪除」按鈕 顯示/隱藏
-    li.addEventListener("mouseenter", () => deleteButton.classList.remove("hidden")); // 滑鼠移入顯示
-    li.addEventListener("mouseleave", () => deleteButton.classList.add("hidden")); // 滑鼠移出隱藏
+    // 5. 滑鼠進入/離開列表項目時，顯示或隱藏刪除按鈕
+    li.addEventListener("mouseenter", () => deleteButton.classList.remove("hidden"));
+    li.addEventListener("mouseleave", () => deleteButton.classList.add("hidden"));
 
+    // 6. 返回創建的 ToDo 項目 (li)
     return li;
 }
-// 創建輸入區塊
+
+// ============================================
+// 每個 ToDo 項目輸入欄位功能
+// ============================================
+// 為每個 ToDo 項目創建輸入框，並修改時執行以下操作
 function createInputField(todo) {
 
-    // 1. 製作「輸入區塊」
+    // 1. 製作「輸入框」
     const input = document.createElement("input");
     input.type = "text";
     input.classList.add("w-full");
     input.value = todo.content;
 
-    // 2. 點擊「輸入區塊」後，執行以下操作
+    // 2. 點擊「輸入框」後，執行以下操作
     input.addEventListener("click", (e) => {
         e.target.disabled = false; // 讓輸入框可以編輯
         e.target.focus(); // 焦點設置到輸入框
     });
 
-    // 3-1. 按下Enter鍵時的處理
-    input.addEventListener("keydown", async (e) => handleInputChange(e, todo));
-
-    // 3-2. 當失去焦點(focus)時的處理
-    input.addEventListener("blur", async (e) => handleInputBlur(e, todo));
-
-    return input;
-}
-// 修改輸入內容的處理: 按下Enter鍵時
-async function handleInputChange(e, todo) {
-    if (e.key === "Enter") {
-
-        // 停止表單的預設行為（避免頁面重新加載）
-        e.preventDefault();
-
-        // 去除前後的多餘空白字符
+    // 3. 修改輸入內容的處理
+    const handleInput = async (e) => {
         const newContent = e.target.value.trim();
 
-        // 根據內容是否為空來進行處理
         if (!newContent) {
             alert("內容不能為空！");
             e.target.value = todo.content; // 恢復原來的內容
         } else if (newContent !== todo.content) {
-            // 禁用輸入框以防止重複提交
             e.target.disabled = true;
             await updateTodo(todo.id, newContent); // 更新輸入內容
         }
+    };
 
-    }
-}
-// 修改輸入內容的處理: 失去焦點(focus)時
-async function handleInputBlur(e, todo) {
-
-    // 去除前後的多餘空白字符
-    const newContent = e.target.value.trim();
-
-    // 根據內容是否為空來進行處理
-    if (!newContent) {
-        alert("內容不能為空！");
-        e.target.value = todo.content; // 恢復原來的內容
-    } else if (newContent !== todo.content) {
-        await updateTodo(todo.id, newContent); // 更新輸入內容
-    }
-}
-// 創建刪除ToDo按鈕
-function createDeleteButton(todo, li) {
-
-    // 1. 製作「刪除」按鈕
-    const deleteButton = document.createElement("button");
-    deleteButton.classList.add("w-[20px]", "hover:opacity-75", "duration-300", "leading-4", "delete", "hidden");
-    deleteButton.innerHTML = '<i class="fa-solid fa-xmark text-2xl"></i>';
-
-    // 2. 點擊「刪除」按鈕時，執行以下操作
-    deleteButton.addEventListener("click", async (e) => {
-
-        // 防止事件傳播到父元素
-        e.stopPropagation();
-
-        // 呼叫刪除API，從伺服器刪除該ToDo
-        await deleteTodo(todo.id);
-
-        // 從DOM中移除該ToDo項目
-        li.remove();
+    // 3-1. 按下Enter鍵時的處理
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); // 停止表單的預設行為
+            handleInput(e);
+        }
     });
 
-    return deleteButton;
+    // 3-2. 當失去焦點(focus)時的處理
+    input.addEventListener("blur", handleInput);
+
+    // 4. 返回輸入框元素
+    return input;
 }
-// 創建checkbox
+
+// ============================================
+// 勾選功能
+// ============================================
+// 為每個 ToDo 項目創建checkbox，並點擊時執行以下操作
 function createTaskCheckBox(todo, li) {
 
     // 1. 製作「checkbox」
@@ -395,9 +365,61 @@ function createTaskCheckBox(todo, li) {
         await toggleTodoCompletion(todo.id, newCompletedState);  // 完了狀態更新至伺服器
     });
 
-    // 追加checkbox至li
+    // 4. 追加checkbox至li
     li.appendChild(taskCheck);
 }
+
+// ============================================
+// 刪除功能
+// ============================================
+// 為每個 ToDo 項目創建刪除按鈕，並點擊時執行以下操作
+function createDeleteButton(todo, li) {
+
+    // 1. 製作「刪除」按鈕
+    const deleteButton = document.createElement("button");
+    deleteButton.classList.add("w-[20px]", "hover:opacity-75", "duration-300", "leading-4", "delete", "hidden");
+    deleteButton.innerHTML = '<i class="fa-solid fa-xmark text-2xl"></i>';
+
+    // 2. 點擊「刪除」按鈕時，執行以下操作
+    deleteButton.addEventListener("click", async (e) => {
+        e.stopPropagation();  // 防止事件傳播到父元素
+        await deleteTodo(todo.id);  // 呼叫刪除API，從伺服器刪除該ToDo
+        li.remove();  // 從DOM中移除該ToDo項目
+    });
+
+    // 3. 返回刪除按鈕
+    return deleteButton;
+}
+// 取得已完成項目
+function getCompletedTodos() {
+    return Array.from(document.querySelectorAll("li")).filter(function (item) {
+        const checkbox = item.querySelector("input[type='checkbox']");
+        return checkbox && checkbox.checked;
+    });
+}
+// 點擊「清除已完成項目」按鈕時，執行以下操作
+const deleteCompletedBtn = document.getElementById("deleteCompletedBtn");
+deleteCompletedBtn.addEventListener("click", async function () {
+
+    const completedTodos = getCompletedTodos(); // ヘルパー関数を使用して完了済みToDoを取得
+
+    if (completedTodos.length > 0) {
+        const todoIds = completedTodos.map(function (item) {
+            return item.getAttribute("data-id");
+        });
+
+        await Promise.all(todoIds.map(function (id) {
+            return deleteTodo(id);
+        }));
+
+        completedTodos.forEach(function (item) {
+            item.remove();
+        });
+    }
+});
+
+
+
 
 
 
