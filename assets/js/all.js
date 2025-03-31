@@ -208,7 +208,10 @@ if (logoutBtn) {
 // ============================================
 // 沒有token，無法訪問toDoList.html (=跳轉登入頁)
 // ============================================
-if (window.location.pathname === "/toDoList.html") {
+// 取得現在路徑
+const path = window.location.pathname;
+// 判斷是否為 本地環境 或 GitHub Pages 環境
+if (path.endsWith("/toDoList.html")) {
     // 1. 從cookie取得token
     const token = getCookie("token");
     // 2. 如果沒有token就跳轉到登入頁面
