@@ -418,7 +418,7 @@ async function toggleTodoCompletion(id, newCompletedState) {
 
         // 2-3. 根據伺服器回應的狀況處理
         if (response.ok) {
-            console.log("完了状態更新成功！");
+            console.log("完成状態更新成功！");
             await fetchTodos(); // 執行讀取ToDo列表
         } else {
             alert(`完成狀態更新失敗: ${result.message}`);
