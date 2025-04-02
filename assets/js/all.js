@@ -590,8 +590,8 @@ function createTaskCheckBox(todo, li) {
 
     // 3. 勾選框被點擊時，執行以下操作
     taskCheck.addEventListener("change", async () => {
-        const newCompletedState = taskCheck.checked;  // 勾選框選中則為完成，未勾選則為未完成
-        await toggleTodoCompletion(todo.id, newCompletedState);  // 完了狀態更新至伺服器
+        const newCompletedState = taskCheck.checked;  // 取消勾選「已完成狀態」
+        await toggleTodoCompletion(todo.id, newCompletedState);  // 更新到伺服器
     });
 
     // 4. 追加checkbox至li
@@ -611,9 +611,9 @@ function createDeleteButton(todo, li) {
 
     // 2. 點擊「刪除」按鈕時，執行以下操作
     deleteButton.addEventListener("click", async (e) => {
-        e.stopPropagation();  // 防止事件傳播到父元素
+        e.stopPropagation();  // 點擊刪除按鈕時，只刪除該項目（ = 避免影響到外層的 <ul>）
         await deleteTodo(todo.id);  // 執行從伺服器刪除該ToDo
-        li.remove();  // 從DOM中移除該ToDo項目
+        li.remove();  // DOM也要立即更新刪除項目
     });
 
     // 3. 返回刪除按鈕
