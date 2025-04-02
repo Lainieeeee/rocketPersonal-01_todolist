@@ -619,6 +619,7 @@ function createDeleteButton(todo, li) {
     // 3. 返回刪除按鈕
     return deleteButton;
 }
+
 // 取得(篩選)已完成項目
 function getCompletedTodos() {
     return Array.from(document.querySelectorAll("li")).filter(function (item) {
@@ -645,7 +646,7 @@ deleteCompletedBtn.addEventListener("click", async function () {
             return deleteTodo(id);
         }));
 
-        // 移除所有已完成的項目
+        // DOM也要移除所有已完成的項目
         completedTodos.forEach(function (item) {
             item.remove();
         });
