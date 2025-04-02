@@ -682,7 +682,7 @@ tabs.forEach(tab => {
 
     });
 });
-// 根據篩選條件顯示 ToDo 項目
+// 根據篩選條件顯示/隱藏 ToDo 項目
 function filterTodos(filter) {
 
     // 1. 取得所有 ToDo 項目（li）
