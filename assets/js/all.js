@@ -260,8 +260,8 @@ if (addBtn) {
             const response = await fetch(`${apiUrl}/todos`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",  // 告訴伺服器提交的內容是 JSON
-                    "Authorization": token  // 告訴伺服器這是來自已驗證用戶的請求
+                    "Content-Type": "application/json",  // 告訴給伺服器，提交的內容是 JSON
+                    "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
                 },
                 body: JSON.stringify({ todo: { content } })
             });
@@ -302,7 +302,7 @@ async function fetchTodos() {
         const response = await fetch(`${apiUrl}/todos`, {
             method: "GET",
             headers: {
-                "Authorization": token  // 告訴伺服器這是來自已驗證用戶的請求
+                "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
             }
         });
 
@@ -341,8 +341,8 @@ async function updateTodo(id, newContent) {
         const response = await fetch(`${apiUrl}/todos/${id}`, {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json",  // 告訴伺服器請求的內容是 JSON
-                "Authorization": token  // 告訴伺服器這是來自已驗證用戶的請求
+                "Content-Type": "application/json",  // 告訴給伺服器，請求的內容是 JSON
+                "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
             },
             body: JSON.stringify({ todo: { content: newContent } })
         });
@@ -376,7 +376,7 @@ async function deleteTodo(id) {
         const response = await fetch(`${apiUrl}/todos/${id}`, {
             method: "DELETE",
             headers: {
-                "Authorization": token  // 告訴伺服器這是來自已驗證用戶的請求
+                "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
             },
         });
 
@@ -394,7 +394,7 @@ async function deleteTodo(id) {
 }
 
 // ============================================
-// 完成/已完成切換ToDo PATCH(部分更新)
+// 待完成/已完成切換ToDo PATCH(部分更新)
 // ============================================
 async function toggleTodoCompletion(id, newCompletedState) {
 
@@ -407,8 +407,8 @@ async function toggleTodoCompletion(id, newCompletedState) {
         const response = await fetch(`${apiUrl}/todos/${id}/toggle`, {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json",  // 告訴伺服器請求的內容是 JSON
-                "Authorization": token  // 傳送用戶的 token 來驗證提交
+                "Content-Type": "application/json",  // 告訴給伺服器，請求的內容是 JSON
+                "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
             },
             body: JSON.stringify({ todo: { completed: newCompletedState } })
         });
