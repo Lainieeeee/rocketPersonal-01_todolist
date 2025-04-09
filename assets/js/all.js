@@ -12,6 +12,7 @@ function handleError(error, message) {
     console.error(error);
     alert(message);
 }
+// module export export import
 // 刪除Cookie
 function deleteCookie(name) {
     // 設定過期時間為過去，這樣 Cookie 就會被刪除(設定:1970/01/01(Thu) 00:00:00)
@@ -31,8 +32,6 @@ function getCookie(name) {
     // 如果找不到指定的 cookie，則返回 null
     return null;
 }
-
-
 
 
 // ============================================
@@ -232,6 +231,210 @@ if (path.endsWith("/toDoList.html")) {
 
 
 // ============================================
+// 新增(建立)ToDo POST
+// ============================================
+// 定義「新增ToDo」按鈕變數
+const addBtn = document.getElementById("addBtn");
+if (addBtn) {
+    // 點擊「新增ToDo」按鈕時，執行這裡
+    addBtn.addEventListener("click", async (e) => {
+
+        // 停止表單的預設(自動提交)行為，避免網頁重新整理
+        e.preventDefault();
+
+        // 1. 從cookie取得token資料（=API需要知道是誰要新增toDo）
+        const token = getCookie("token");
+        // 2. 取得輸入欄位的內容
+        const content = document.getElementById("inputContent").value;
+
+        // 3. 檢查輸入欄位是否空
+        if (!content) {
+            alert("請輸入內容");
+            return;
+        }
+
+        // 4. 如果輸入正確，執行以下操作
+        try {
+            // 2-1. 使用 POST 提交資料送到伺服器
+            const response = await fetch(`${apiUrl}/todos`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",  // 告訴給伺服器，提交的內容是 JSON
+                    "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
+                },
+                body: JSON.stringify({ todo: { content } })
+            });
+
+            // 2-2. 從伺服器回傳的資料改成 JSON 格式
+            const result = await response.json();
+
+            // 2-3. 根據伺服器回應的狀況處理
+            if (response.ok) {
+                console.log("新增成功！");
+                await fetchTodos(); // 執行讀取ToDo列表
+                const contentInput = document.getElementById("inputContent"); // 取得輸入欄位的元素
+                if (contentInput) {
+                    contentInput.value = ""; // 新增成功後，清空輸入欄位
+                } else {
+                    console.error("未找到輸入欄位");
+                }
+            } else {
+                console.error("新增失敗:", result);
+            }
+        } catch (error) {
+            handleError(error, "新增時發生錯誤");
+        }
+    });
+}
+
+// ============================================
+// 讀取ToDo GET
+// ============================================
+async function fetchTodos() {
+
+    // 1. 從cookie取得token資料（=API需要知道是誰要讀取toDo）
+    const token = getCookie("token");
+
+    // 2. 如果取得token，執行以下操作
+    try {
+        // 2-1. 使用 GET 請求資料送到伺服器
+        const response = await fetch(`${apiUrl}/todos`, {
+            method: "GET",
+            headers: {
+                "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
+            }
+        });
+
+        // 2-2. 檢查取得token是否有效的（例如：期限過期）
+        if (response.status === 401) {
+            console.warn("未授權，請先登入");
+            return;
+        }
+
+        // 2-3. 從伺服器回傳的資料改成 JSON 格式
+        const result = await response.json();
+
+        // 2-4. 根據伺服器回應的狀況處理
+        if (response.ok) {
+            renderTodos(result.todos); // 成功後渲染畫面
+        } else {
+            alert(`取得待辦事項失敗: ${result.message}`);
+        }
+    } catch (error) {
+        handleError(error, "無法取得待辦事項");
+    }
+}
+document.addEventListener("DOMContentLoaded", fetchTodos);
+
+// ============================================
+// 修改ToDo PUT(更新整筆資料)
+// ============================================
+async function updateTodo(id, newContent) {
+
+    // 1. 從cookie取得token資料（=API需要知道是誰要修改toDo）
+    const token = getCookie("token");
+
+    // 2. 如果取得token，執行以下操作
+    try {
+        // 2-1. 使用 PUT 提交資料送到伺服器
+        const response = await fetch(`${apiUrl}/todos/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",  // 告訴給伺服器，請求的內容是 JSON
+                "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
+            },
+            body: JSON.stringify({ todo: { content: newContent } })
+        });
+
+        // 2-3. 從伺服器回傳的資料改成 JSON 格式
+        const result = await response.json();
+
+        // 2-4. 根據伺服器回應的狀況處理
+        if (response.ok) {
+            console.log("更新成功！");
+            await fetchTodos(); // 執行讀取ToDo列表
+        } else {
+            alert(`更新待辦事項失敗: ${result.message}`);
+        }
+    } catch (error) {
+        handleError(error, "更新時發生錯誤");
+    }
+}
+
+// ============================================
+// 刪除ToDo DELETE
+// ============================================
+async function deleteTodo(id) {
+
+    // 1. 從cookie取得token資料（=API需要知道是誰要刪除toDo）
+    const token = getCookie("token");
+
+    // 2. 如果取得token，執行以下操作
+    try {
+        // 2-1. 使用 DELETE 請求資料送到伺服器
+        const response = await fetch(`${apiUrl}/todos/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
+            },
+        });
+
+        // 2-2. 根據伺服器回應的狀況處理
+        if (response.ok) {
+            console.log("刪除成功！");
+            await fetchTodos(); // 執行讀取ToDo列表
+        } else {
+            const result = await response.json();
+            alert(`刪除失敗: ${result.message}`);
+        }
+    } catch (error) {
+        handleError(error, "刪除時發生錯誤");
+    }
+}
+
+// ============================================
+// 待完成/已完成切換ToDo PATCH(部分更新)
+// ============================================
+async function toggleTodoCompletion(id, newCompletedState) {
+
+    // 1. 從cookie取得token資料（=API需要知道是誰要切換toDo狀態）
+    const token = getCookie("token");
+
+    // 2. 如果取得token，執行以下操作
+    try {
+        // 2-1. 使用 PATCH 請求資料送到伺服器
+        const response = await fetch(`${apiUrl}/todos/${id}/toggle`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",  // 告訴給伺服器，請求的內容是 JSON
+                "Authorization": token  // 告訴給伺服器，哪個用戶正在發送請求
+            },
+            body: JSON.stringify({ todo: { completed: newCompletedState } })
+        });
+
+        // 2-2. 從伺服器回傳的資料改成 JSON 格式
+        const result = await response.json();
+
+        // 2-3. 根據伺服器回應的狀況處理
+        if (response.ok) {
+            console.log("完成状態更新成功！");
+            await fetchTodos(); // 執行讀取ToDo列表
+        } else {
+            alert(`完成狀態更新失敗: ${result.message}`);
+        }
+    } catch (error) {
+        handleError(error, "完成狀態更新時發生錯誤");
+    }
+}
+
+
+
+
+
+
+
+
+// ============================================
 // 顯示 ToDo 列表
 // ============================================
 // 取得元素並隱藏空訊息與列表區塊
@@ -257,7 +460,7 @@ function renderTodos(todos) {
         emptyMessage.classList.add("hidden"); // 隱藏空訊息
         listBox.classList.remove("hidden"); // 顯示列表區塊
 
-        // 迭代並創建每個ToDo項目
+        // 迴圈每個ToDo項目
         todos.forEach(todo => {
             const li = createTodoItem(todo); // 創建ToDo項目
             const inputField = li.querySelector('input[type="text"]');
@@ -338,11 +541,13 @@ function createInputField(todo) {
 
     // 3. 修改輸入內容的處理
     const handleInput = async (e) => {
+
+        // 去除前後的空白
         const newContent = e.target.value.trim();
 
         if (!newContent) {
             alert("內容不能為空！");
-            e.target.value = todo.content; // 恢復原來的內容
+            e.target.value = todo.content; // 恢復原來的輸入內容
         } else if (newContent !== todo.content) {
             e.target.disabled = true;
             await updateTodo(todo.id, newContent); // 更新輸入內容
@@ -384,8 +589,8 @@ function createTaskCheckBox(todo, li) {
 
     // 3. 勾選框被點擊時，執行以下操作
     taskCheck.addEventListener("change", async () => {
-        const newCompletedState = taskCheck.checked;  // 勾選框選中則為完成，未勾選則為未完成
-        await toggleTodoCompletion(todo.id, newCompletedState);  // 完了狀態更新至伺服器
+        const newCompletedState = taskCheck.checked;  // 取消勾選「已完成狀態」
+        await toggleTodoCompletion(todo.id, newCompletedState);  // 更新到伺服器
     });
 
     // 4. 追加checkbox至li
@@ -405,15 +610,16 @@ function createDeleteButton(todo, li) {
 
     // 2. 點擊「刪除」按鈕時，執行以下操作
     deleteButton.addEventListener("click", async (e) => {
-        e.stopPropagation();  // 防止事件傳播到父元素
-        await deleteTodo(todo.id);  // 呼叫刪除API，從伺服器刪除該ToDo
-        li.remove();  // 從DOM中移除該ToDo項目
+        e.stopPropagation();  // 點擊刪除按鈕時，只刪除該項目（ = 避免影響到外層的 <ul>）
+        await deleteTodo(todo.id);  // 執行從伺服器刪除該ToDo
+        li.remove();  // DOM也要立即更新刪除項目
     });
 
     // 3. 返回刪除按鈕
     return deleteButton;
 }
-// 取得已完成項目
+
+// 取得(篩選)已完成項目
 function getCompletedTodos() {
     return Array.from(document.querySelectorAll("li")).filter(function (item) {
         const checkbox = item.querySelector("input[type='checkbox']");
@@ -424,196 +630,27 @@ function getCompletedTodos() {
 const deleteCompletedBtn = document.getElementById("deleteCompletedBtn");
 deleteCompletedBtn.addEventListener("click", async function () {
 
-    const completedTodos = getCompletedTodos(); // ヘルパー関数を使用して完了済みToDoを取得
+    const completedTodos = getCompletedTodos(); // 取得(篩選)已完成項目
 
+    // 確認有已完成的項目
     if (completedTodos.length > 0) {
+
+        // 取得的陣列中的每個已完成項目ID，並回傳 data-id 屬性值
         const todoIds = completedTodos.map(function (item) {
             return item.getAttribute("data-id");
         });
 
+        // 送出刪除請求
         await Promise.all(todoIds.map(function (id) {
             return deleteTodo(id);
         }));
 
+        // DOM也要移除所有已完成的項目
         completedTodos.forEach(function (item) {
             item.remove();
         });
     }
 });
-
-
-
-
-
-
-
-
-// ============================================
-// ToDo列表 GET
-// ============================================
-async function fetchTodos() {
-    const token = getCookie("token");
-
-    try {
-        const response = await fetch(`${apiUrl}/todos`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": token  // 伺服器要求不需要 "Bearer "
-            }
-        });
-
-        if (response.status === 401) {
-            console.warn("未授權，請先登入");
-            return;
-        }
-
-        const result = await response.json();
-
-        if (response.ok) {
-            renderTodos(result.todos); // 成功後渲染畫面
-        } else {
-            alert(`取得待辦事項失敗: ${result.message}`);
-        }
-    } catch (error) {
-        handleError(error, "無法取得待辦事項");
-    }
-}
-document.addEventListener("DOMContentLoaded", fetchTodos);
-
-// ============================================
-// 新增ToDo POST
-// ============================================
-const addBtn = document.getElementById("addBtn");
-if (addBtn) {
-    addBtn.addEventListener("click", async (e) => {
-        e.preventDefault();  // 停止表單的預設提交行為
-
-        const token = getCookie("token");
-        const content = document.getElementById("inputContent").value;
-
-        if (!content) {
-            alert("請輸入內容");
-            return;
-        }
-
-        try {
-            const response = await fetch(`${apiUrl}/todos`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": token
-                },
-                body: JSON.stringify({ todo: { content } })
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                console.log("新增成功！");
-                await fetchTodos();
-                const contentInput = document.getElementById("inputContent");
-                if (contentInput) {
-                    contentInput.value = "";
-                } else {
-                    console.error("未找到輸入欄位");
-                }
-            } else {
-                console.error("新增失敗:", result);
-            }
-        } catch (error) {
-            handleError(error, "新增時發生錯誤");
-        }
-    });
-}
-
-// ============================================
-// 修改ToDo PUT
-// ============================================
-async function updateTodo(id, newContent) {
-    const token = getCookie("token");
-
-    try {
-        const response = await fetch(`${apiUrl}/todos/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
-            },
-            body: JSON.stringify({ todo: { content: newContent } })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            console.log("更新成功！");
-            await fetchTodos(); // 更新後重新抓取所有待辦事項
-        } else {
-            alert(`更新待辦事項失敗: ${result.message}`);
-        }
-    } catch (error) {
-        handleError(error, "更新時發生錯誤");
-    }
-}
-
-// ============================================
-// 刪除ToDo DELETE
-// ============================================
-async function deleteTodo(id) {
-    const token = getCookie("token");
-
-    try {
-        const response = await fetch(`${apiUrl}/todos/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
-            },
-        });
-
-        if (response.ok) {
-            console.log("刪除成功！");
-            await fetchTodos();  // 刪除後重新抓取所有待辦事項，這樣會自動更新計數
-        } else {
-            const result = await response.json();
-            alert(`刪除失敗: ${result.message}`);
-        }
-    } catch (error) {
-        handleError(error, "刪除時發生錯誤");
-    }
-}
-
-// ============================================
-// 完成/已完成切換ToDo PATCH
-// ============================================
-async function toggleTodoCompletion(id, newCompletedState) {
-    const token = getCookie("token");
-
-    try {
-        const response = await fetch(`${apiUrl}/todos/${id}/toggle`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": token,
-            },
-            body: JSON.stringify({ todo: { completed: newCompletedState } })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            console.log("完了状態更新成功！");
-            await fetchTodos();
-        } else {
-            alert(`完成狀態更新失敗: ${result.message}`);
-        }
-    } catch (error) {
-        handleError(error, "完成狀態更新時發生錯誤");
-    }
-}
-
-
-
 
 
 
@@ -632,10 +669,11 @@ tabs.forEach(tab => {
 
         // 2. 先重新獲取最新的 ToDo 列表
         await fetchTodos();
-        // 根據點擊的按鈕篩選 ToDo 項目
+
+        // 3. 根據篩選條件顯示 ToDo 項目
         filterTodos(filter);
 
-        // 3. 更新按鈕樣式
+        // 4. 更新按鈕樣式
         tabs.forEach(t => t.classList.remove("border-black","active"));
         tabs.forEach(t => t.classList.add("border-silver"));
         tab.classList.add("border-black","active");
@@ -643,7 +681,7 @@ tabs.forEach(tab => {
 
     });
 });
-// 根據篩選條件顯示 ToDo 項目
+// 根據篩選條件顯示/隱藏 ToDo 項目
 function filterTodos(filter) {
 
     // 1. 取得所有 ToDo 項目（li）
@@ -651,10 +689,11 @@ function filterTodos(filter) {
 
     // 2. 根據篩選條件顯示或隱藏 ToDo 項目
     todoListItems.forEach(item => {
-        // 判斷該項目是否已完成
+
+        // 2-1. 判斷該項目是否已完成
         const isCompleted = item.classList.contains("completed");
 
-        // 根據篩選條件顯示或隱藏
+        // 2-2. 根據篩選條件顯示或隱藏
         if (filter === "all" || (filter === "incomplete" && !isCompleted) || (filter === "completed" && isCompleted)) {
             item.style.display = "flex";
         } else {
