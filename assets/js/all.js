@@ -12,6 +12,7 @@ function handleError(error, message) {
     console.error(error);
     alert(message);
 }
+// module export export import
 // 刪除Cookie
 function deleteCookie(name) {
     // 設定過期時間為過去，這樣 Cookie 就會被刪除(設定:1970/01/01(Thu) 00:00:00)
@@ -31,8 +32,6 @@ function getCookie(name) {
     // 如果找不到指定的 cookie，則返回 null
     return null;
 }
-
-
 
 
 // ============================================
